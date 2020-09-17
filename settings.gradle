@@ -1,0 +1,2 @@
+include ':core', ':android', ':core-app', ':android-app'
+rootProject.name = "kemp"
