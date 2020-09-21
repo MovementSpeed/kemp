@@ -4,7 +4,10 @@ import com.kemp.core.Position
 import com.kemp.core.Rotation
 import com.kemp.core.Scale
 import com.kemp.core.utils.Float3
+import com.kemp.core.utils.radians
 import com.kemp.core.utils.translation
+import com.kemp.core.utils.transpose
+import kotlin.concurrent.timer
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -17,15 +20,20 @@ class Transform {
     val array: FloatArray
         get() = matrix.toFloatArray()
 
-    private val matrix = com.kemp.core.utils.scale(scale) *
+    private var matrix = transpose(com.kemp.core.utils.scale(scale) *
             com.kemp.core.utils.rotation(rotation) *
-            translation(position)
+            translation(position))
 
     fun translate(v: Float3): Transform {
+        // FIXME: transpose creates a new Mat4 every time. Do what's inside transpose directly on $matrix
+        matrix = transpose(matrix)
+
         matrix[0][3] += matrix[0][0] * v.x + matrix[0][1] * v.y + matrix[0][2] * v.z
         matrix[1][3] += matrix[1][0] * v.x + matrix[1][1] * v.y + matrix[1][2] * v.z
         matrix[2][3] += matrix[2][0] * v.x + matrix[2][1] * v.y + matrix[2][2] * v.z
         matrix[3][3] += matrix[3][0] * v.x + matrix[3][1] * v.y + matrix[3][2] * v.z
+
+        matrix = transpose(matrix)
 
         position.xyz = matrix.position
         forward.xyz = matrix.forward
@@ -38,13 +46,19 @@ class Transform {
      * @param v: v.x => pitch, v.y => yaw, v.z => roll
      */
     fun rotate(v: Float3): Transform {
-        val hr: Float = v.z * 0.5f
+        matrix = transpose(matrix)
+
+        val roll = radians(v.z)
+        val pitch = radians(v.x)
+        val yaw = radians(v.y)
+
+        val hr: Float = roll * 0.5f
         val shr = sin(hr)
         val chr = cos(hr)
-        val hp: Float = v.x * 0.5f
+        val hp: Float = pitch * 0.5f
         val shp = sin(hp)
         val chp = cos(hp)
-        val hy: Float = v.y * 0.5f
+        val hy: Float = yaw * 0.5f
         val shy = sin(hy)
         val chy = cos(hy)
         val chyShp = chy * shp
@@ -56,6 +70,7 @@ class Transform {
         val y = shyChp * chr - chyShp * shr
         val z = chyChp * shr - shyShp * chr
         val w: Float = chyChp * chr + shyShp * shr
+
         val xx = x * x
         val xy = x * y
         val xz = x * z
@@ -102,6 +117,8 @@ class Transform {
         matrix[1][2] = m12
         matrix[2][2] = m22
         matrix[3][2] = m32
+
+        matrix = transpose(matrix)
 
         rotation.xyz = matrix.rotation
         forward.xyz = matrix.forward

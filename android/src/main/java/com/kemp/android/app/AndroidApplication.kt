@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.artemis.utils.EntityBuilder
+import com.artemis.ComponentMapper
+import com.artemis.World
+import com.artemis.WorldConfigurationBuilder
 import com.google.android.filament.*
 import com.google.android.filament.android.DisplayHelper
 import com.google.android.filament.android.UiHelper
@@ -17,9 +19,13 @@ import com.google.android.filament.gltfio.MaterialProvider
 import com.google.android.filament.gltfio.ResourceLoader
 import com.google.android.filament.utils.*
 import com.kemp.android.AttachStateListener
+import com.kemp.android.ecs.systems.AndroidTransformSystem
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.app.Application
+import com.kemp.core.ecs.components.CameraNodeComponent
+import com.kemp.core.ecs.components.EntityAssociationComponent
+import com.kemp.core.ecs.components.TransformComponent
 
 class AndroidApplication(private val context: Context) : Application, UiHelper.RendererCallback, LifecycleObserver,
     AttachStateListener {
@@ -30,6 +36,11 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
     lateinit var assetLoader: AssetLoader
     lateinit var resourceLoader: ResourceLoader
     lateinit var scene: Scene
+
+    // Ecs
+    private lateinit var entityAssociationMapper: ComponentMapper<EntityAssociationComponent>
+    private lateinit var transformMapper: ComponentMapper<TransformComponent>
+    private lateinit var cameraNodeMapper: ComponentMapper<CameraNodeComponent>
 
     // Android rendering framework
     private lateinit var choreographer: Choreographer
@@ -51,25 +62,9 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
     init {
         Utils.init()
         initFilament()
+        initEcs()
+        setupCamera()
         initView()
-    }
-
-    private fun initView() {
-        view = SurfaceView(context)
-        view.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-
-        choreographer = Choreographer.getInstance()
-        displayHelper = DisplayHelper(context)
-
-        uiHelper = UiHelper(UiHelper.ContextErrorPolicy.CHECK)
-        uiHelper.renderCallback = this
-
-        uiHelper.attachTo(view)
-
-        view.addOnAttachStateChangeListener(this)
     }
 
     // UiHelper.RendererCallback
@@ -122,20 +117,28 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
     }
 
     private fun androidFrame(frameTimeNanos: Long) {
+        Kemp.world.process()
         update(frameTimeNanos)
         choreographer.postFrameCallback(frameScheduler)
 
         if (!uiHelper.isReadyToRender) return
         val sc = swapChain ?: return
 
-        val mma = FloatArray(16)
-        camera.getModelMatrix(mma)
-        val mm = Mat4.of(*mma)
-
         if (renderer.beginFrame(sc, frameTimeNanos)) {
             renderer.render(filamentView)
             renderer.endFrame()
         }
+    }
+
+    private fun initEcs() {
+        val worldConf = WorldConfigurationBuilder()
+            .with(AndroidTransformSystem(engine, engine.transformManager))
+            .build()
+
+        Kemp.world = World(worldConf)
+        entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
+        transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
+        cameraNodeMapper = Kemp.world.getMapper(CameraNodeComponent::class.java)
     }
 
     // Filament
@@ -144,14 +147,12 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
         renderer = engine.createRenderer()
         scene = engine.createScene()
         filamentView = engine.createView()
-        setupCamera()
 
         val co = Renderer.ClearOptions()
         co.clear = true
         co.clearColor = floatArrayOf(1f, 0f, 0f, 1f)
         renderer.clearOptions = co
 
-        filamentView.camera = camera
         filamentView.scene = scene
 
         assetLoader = AssetLoader(engine, MaterialProvider(engine), EntityManager.get())
@@ -168,6 +169,24 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
             .build(engine, light)
 
         scene.addEntity(light)
+    }
+
+    private fun initView() {
+        view = SurfaceView(context)
+        view.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+
+        choreographer = Choreographer.getInstance()
+        displayHelper = DisplayHelper(context)
+
+        uiHelper = UiHelper(UiHelper.ContextErrorPolicy.CHECK)
+        uiHelper.renderCallback = this
+
+        uiHelper.attachTo(view)
+
+        view.addOnAttachStateChangeListener(this)
     }
 
     private fun destroyFilament() {
@@ -188,11 +207,13 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
         val em = EntityManager.get()
         val cameraEntity = em.create()
         camera = engine.createCamera(cameraEntity)
+        filamentView.camera = camera
 
-        // TODO: cameraEntity is too high, doesn't match with a world created entity
-        // TODO: create some kind of association between the two
-        // TODO: maybe a "transformer" class local to the implementation (android) module?
-        val kempEntity = Kemp.world.create()
+        val kempCameraEntity = Kemp.world.create()
+        val entityAssociation = entityAssociationMapper.create(kempCameraEntity)
+        entityAssociation.implementationEntity = cameraEntity
+        transformMapper.create(kempCameraEntity)
+        cameraNodeMapper.create(kempCameraEntity)
 
         camera.setExposure(16f, 1f / 125f, 100f)
 

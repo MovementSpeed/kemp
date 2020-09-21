@@ -9,13 +9,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 object Kemp {
-    val world = World()
     val coroutineScope = CoroutineScope(Dispatchers.Default)
 
     lateinit var application: Application
     lateinit var assets: Assets
     lateinit var scene: Scene
     lateinit var game: Game
+    lateinit var world: World
 
     fun start() {
         game.ready(scene)

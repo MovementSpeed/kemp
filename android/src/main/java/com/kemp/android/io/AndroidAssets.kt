@@ -1,6 +1,7 @@
 package com.kemp.android.io
 
 import android.content.Context
+import com.artemis.ComponentMapper
 import com.google.android.filament.Engine
 import com.google.android.filament.gltfio.AssetLoader
 import com.google.android.filament.gltfio.FilamentAsset
@@ -8,6 +9,11 @@ import com.google.android.filament.gltfio.ResourceLoader
 import com.google.android.filament.utils.*
 import com.kemp.android.fileSeparator
 import com.kemp.android.models.AndroidModel
+import com.kemp.core.Kemp
+import com.kemp.core.ecs.components.CameraNodeComponent
+import com.kemp.core.ecs.components.EntityAssociationComponent
+import com.kemp.core.ecs.components.NodeComponent
+import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.io.Assets
 import com.kemp.core.models.Model
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +25,10 @@ class AndroidAssets(private val context: Context,
                     private val engine: Engine,
                     private val assetLoader: AssetLoader,
                     private val resourceLoader: ResourceLoader) : Assets {
+    private val entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
+    private val transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
+    private val nodeMapper = Kemp.world.getMapper(NodeComponent::class.java)
+
     override suspend fun loadModel(path: String, fileName: String): Model? = withContext(Dispatchers.IO) {
         //val inputStream = File(context.filesDir, "$path$fileSeparator$fileName").inputStream()
 
@@ -40,11 +50,23 @@ class AndroidAssets(private val context: Context,
 
             ast.releaseSourceData()
             transformToUnitCube(ast)
-            AndroidModel(ast)
+
+            val model = AndroidModel(ast)
+
+            val entities = model.entities()
+            entities.forEach { implementationEntity ->
+                val kempEntity = Kemp.world.create()
+                val entityAssociation = entityAssociationMapper.create(kempEntity)
+                entityAssociation.implementationEntity = implementationEntity
+                transformMapper.create(kempEntity)
+                nodeMapper.create(kempEntity)
+            }
+
+            model
         }
     }
 
-    fun transformToUnitCube(asset: FilamentAsset?, centerPoint: Float3 = Float3(0f, 0f, -4f)) {
+    private fun transformToUnitCube(asset: FilamentAsset?, centerPoint: Float3 = Float3(0f, 0f, -4f)) {
         asset?.let { asset ->
             val tm = engine.transformManager
             var center = asset.boundingBox.center.let { v-> Float3(v[0], v[1], v[2]) }
