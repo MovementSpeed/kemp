@@ -49,7 +49,7 @@ class AndroidAssets(private val context: Context,
             }
 
             ast.releaseSourceData()
-            transformToUnitCube(ast)
+            //transformToUnitCube(ast)
 
             val model = AndroidModel(ast)
 
@@ -59,14 +59,16 @@ class AndroidAssets(private val context: Context,
                 val entityAssociation = entityAssociationMapper.create(kempEntity)
                 entityAssociation.implementationEntity = implementationEntity
                 transformMapper.create(kempEntity)
-                nodeMapper.create(kempEntity)
+                val node = nodeMapper.create(kempEntity)
+                val nodeName = model.nameOf(implementationEntity)
+                node.name = nodeName
             }
 
             model
         }
     }
 
-    private fun transformToUnitCube(asset: FilamentAsset?, centerPoint: Float3 = Float3(0f, 0f, -4f)) {
+    private fun transformToUnitCube(asset: FilamentAsset?, centerPoint: Float3 = Float3(0f, 0f, 0f)) {
         asset?.let { asset ->
             val tm = engine.transformManager
             var center = asset.boundingBox.center.let { v-> Float3(v[0], v[1], v[2]) }

@@ -3,10 +3,7 @@ package com.kemp.core.scene
 import com.kemp.core.Position
 import com.kemp.core.Rotation
 import com.kemp.core.Scale
-import com.kemp.core.utils.Float3
-import com.kemp.core.utils.radians
-import com.kemp.core.utils.translation
-import com.kemp.core.utils.transpose
+import com.kemp.core.utils.*
 import kotlin.concurrent.timer
 import kotlin.math.cos
 import kotlin.math.sin
@@ -24,16 +21,20 @@ class Transform {
             com.kemp.core.utils.rotation(rotation) *
             translation(position))
 
+    fun transpose(): Transform {
+        transposeFast(matrix)
+        return this
+    }
+
     fun translate(v: Float3): Transform {
-        // FIXME: transpose creates a new Mat4 every time. Do what's inside transpose directly on $matrix
-        matrix = transpose(matrix)
+        transposeFast(matrix)
 
         matrix[0][3] += matrix[0][0] * v.x + matrix[0][1] * v.y + matrix[0][2] * v.z
         matrix[1][3] += matrix[1][0] * v.x + matrix[1][1] * v.y + matrix[1][2] * v.z
         matrix[2][3] += matrix[2][0] * v.x + matrix[2][1] * v.y + matrix[2][2] * v.z
         matrix[3][3] += matrix[3][0] * v.x + matrix[3][1] * v.y + matrix[3][2] * v.z
 
-        matrix = transpose(matrix)
+        transposeFast(matrix)
 
         position.xyz = matrix.position
         forward.xyz = matrix.forward
@@ -46,7 +47,7 @@ class Transform {
      * @param v: v.x => pitch, v.y => yaw, v.z => roll
      */
     fun rotate(v: Float3): Transform {
-        matrix = transpose(matrix)
+        transposeFast(matrix)
 
         val roll = radians(v.z)
         val pitch = radians(v.x)
@@ -118,7 +119,7 @@ class Transform {
         matrix[2][2] = m22
         matrix[3][2] = m32
 
-        matrix = transpose(matrix)
+        transposeFast(matrix)
 
         rotation.xyz = matrix.rotation
         forward.xyz = matrix.forward

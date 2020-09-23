@@ -10,8 +10,7 @@ import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
-import com.kemp.core.utils.Float3
-import com.kemp.core.utils.lookTowards
+import com.kemp.core.utils.Pool
 
 @All(TransformComponent::class, EntityAssociationComponent::class)
 @One(NodeComponent::class, CameraNodeComponent::class)
@@ -20,8 +19,7 @@ class AndroidTransformSystem(private val engine: Engine, private val transformMa
     private lateinit var nodeMapper: ComponentMapper<NodeComponent>
     private lateinit var cameraNodeMapper: ComponentMapper<CameraNodeComponent>
     private lateinit var entityAssociationMapper: ComponentMapper<EntityAssociationComponent>
-
-    private var rotationDone = false
+    private var float3 = Pool.useFloat3()
 
     override fun process(entityId: Int) {
         val transformComponent = transformMapper.get(entityId)
@@ -52,8 +50,11 @@ class AndroidTransformSystem(private val engine: Engine, private val transformMa
 
                 val camera = engine.getCameraComponent(filamentEntity)
 
-                // FIXME: this creates a new Float3 for every call
-                val center = position + forward
+                float3.x = position.x + forward.x
+                float3.y = position.y + forward.y
+                float3.z = position.z + forward.z
+
+                val center = float3
                 camera?.lookAt(
                     position.x.toDouble(),
                     position.y.toDouble(),

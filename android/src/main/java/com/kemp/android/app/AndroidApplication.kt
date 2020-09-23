@@ -27,9 +27,13 @@ import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.TransformComponent
 
-class AndroidApplication(private val context: Context) : Application, UiHelper.RendererCallback, LifecycleObserver,
+class AndroidApplication(private val context: Context,
+                         private val ecsConfig: (worldConfigBuilder: WorldConfigurationBuilder) -> Unit = {}
+) : Application, UiHelper.RendererCallback, LifecycleObserver,
     AttachStateListener {
     override var update: (frameTimeNanos: Long) -> Unit = {}
+
+    var ecsCameraEntity: Entity = -1
 
     lateinit var engine: Engine
     lateinit var view: SurfaceView
@@ -56,7 +60,6 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
     private lateinit var renderer: Renderer
     private lateinit var filamentView: View
 
-    var cameraEntity: Entity = -1
     private lateinit var camera: Camera
 
     init {
@@ -131,11 +134,12 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
     }
 
     private fun initEcs() {
-        val worldConf = WorldConfigurationBuilder()
+        val worldConfBuilder = WorldConfigurationBuilder()
             .with(AndroidTransformSystem(engine, engine.transformManager))
-            .build()
 
-        Kemp.world = World(worldConf)
+        ecsConfig(worldConfBuilder)
+
+        Kemp.world = World(worldConfBuilder.build())
         entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
         transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
         cameraNodeMapper = Kemp.world.getMapper(CameraNodeComponent::class.java)
@@ -209,11 +213,11 @@ class AndroidApplication(private val context: Context) : Application, UiHelper.R
         camera = engine.createCamera(cameraEntity)
         filamentView.camera = camera
 
-        val kempCameraEntity = Kemp.world.create()
-        val entityAssociation = entityAssociationMapper.create(kempCameraEntity)
+        ecsCameraEntity = Kemp.world.create()
+        val entityAssociation = entityAssociationMapper.create(ecsCameraEntity)
         entityAssociation.implementationEntity = cameraEntity
-        transformMapper.create(kempCameraEntity)
-        cameraNodeMapper.create(kempCameraEntity)
+        transformMapper.create(ecsCameraEntity)
+        cameraNodeMapper.create(ecsCameraEntity)
 
         camera.setExposure(16f, 1f / 125f, 100f)
 

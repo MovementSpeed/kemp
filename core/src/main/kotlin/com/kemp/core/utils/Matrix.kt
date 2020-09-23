@@ -369,6 +369,49 @@ fun transpose(m: Mat4) = Mat4(
     Float4(m.x.z, m.y.z, m.z.z, m.w.z),
     Float4(m.x.w, m.y.w, m.z.w, m.w.w)
 )
+
+fun transposeFast(matrix: Mat4) {
+    val m00 = matrix.x.x
+    val m01 = matrix.x.y
+    val m02 = matrix.x.z
+    val m03 = matrix.x.w
+
+    val m10 = matrix.y.x
+    val m11 = matrix.y.y
+    val m12 = matrix.y.z
+    val m13 = matrix.y.w
+
+    val m20 = matrix.z.x
+    val m21 = matrix.z.y
+    val m22 = matrix.z.z
+    val m23 = matrix.z.w
+
+    val m30 = matrix.w.x
+    val m31 = matrix.w.y
+    val m32 = matrix.w.z
+    val m33 = matrix.w.w
+
+    matrix.x.x = m00
+    matrix.x.y = m10
+    matrix.x.z = m20
+    matrix.x.w = m30
+
+    matrix.y.x = m01
+    matrix.y.y = m11
+    matrix.y.z = m21
+    matrix.y.w = m31
+
+    matrix.z.x = m02
+    matrix.z.y = m12
+    matrix.z.z = m22
+    matrix.z.w = m32
+
+    matrix.w.x = m03
+    matrix.w.y = m13
+    matrix.w.z = m23
+    matrix.w.w = m33
+}
+
 fun inverse(m: Mat4): Mat4 {
     val result = Mat4()
 

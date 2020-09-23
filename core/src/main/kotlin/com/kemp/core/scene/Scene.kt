@@ -1,10 +1,12 @@
 package com.kemp.core.scene
 
 import com.kemp.core.Entity
+import com.kemp.core.SceneEntity
 
 interface Scene {
-    fun addEntity(entity: Entity)
-    fun addEntities(entities: List<Entity>)
-    fun removeEntity(entity: Entity)
-    fun removeEntities(entities: List<Entity>)
+    fun mainCamera(): Entity
+    fun addEntity(entity: SceneEntity)
+    fun addEntities(entities: List<SceneEntity>)
+    fun removeEntity(entity: SceneEntity)
+    fun removeEntities(entities: List<SceneEntity>)
 }

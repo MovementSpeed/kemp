@@ -16,7 +16,10 @@ class MainActivity : AppCompatActivity() {
 
         val playgroundGame = PlaygroundGame()
 
-        val androidApplication = AndroidApplication(this)
+        val androidApplication = AndroidApplication(this) {
+            playgroundGame.worldConfig(it)
+        }
+
         ll_root.addView(androidApplication.view)
 
         val androidAssets = AndroidAssets(
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             androidApplication.assetLoader,
             androidApplication.resourceLoader)
 
-        val androidScene = AndroidScene(androidApplication.scene)
+        val androidScene = AndroidScene(androidApplication.scene, androidApplication.ecsCameraEntity)
 
         lifecycle.addObserver(androidApplication)
 

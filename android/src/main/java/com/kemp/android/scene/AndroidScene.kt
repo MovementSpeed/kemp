@@ -4,7 +4,11 @@ import com.kemp.android.FilamentScene
 import com.kemp.core.Entity
 import com.kemp.core.scene.Scene
 
-class AndroidScene(private val scene: FilamentScene): Scene {
+class AndroidScene(private val scene: FilamentScene, private val mainCamera: Entity): Scene {
+    override fun mainCamera(): Entity {
+        return mainCamera
+    }
+
     override fun addEntity(entity: Entity) {
         scene.addEntity(entity)
     }
