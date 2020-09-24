@@ -10,6 +10,7 @@ import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
+import com.kemp.core.utils.Float3
 import com.kemp.core.utils.Pool
 
 @All(TransformComponent::class, EntityAssociationComponent::class)
@@ -24,6 +25,7 @@ class AndroidTransformSystem(private val engine: Engine, private val transformMa
     override fun process(entityId: Int) {
         val transformComponent = transformMapper.get(entityId)
         val transform = transformComponent.transform
+        transform.update()
 
         val nodeComponent = if (nodeMapper.has(entityId)) {
             nodeMapper.get(entityId)

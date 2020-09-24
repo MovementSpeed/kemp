@@ -15,30 +15,38 @@ class Transform {
     val forward: Float3 = Float3(0f, 0f, 1f)
     val up: Float3 = Float3(0f, 1f, 0f)
     val array: FloatArray
-        get() = matrix.toFloatArray()
+        get() = transpose(matrix).toFloatArray()
 
-    private var matrix = transpose(com.kemp.core.utils.scale(scale) *
+    private var matrix = com.kemp.core.utils.scale(scale) *
             com.kemp.core.utils.rotation(rotation) *
-            translation(position))
+            translation(position)
 
     fun transpose(): Transform {
         transposeFast(matrix)
         return this
     }
 
-    fun translate(v: Float3): Transform {
-        transposeFast(matrix)
+    fun update() {
+        position.xyz = matrix.position
+        rotation.xyz = matrix.rotation
+        scale.xyz = matrix.scale
+        forward.xyz = matrix.forward
+        up.xyz = matrix.up
+    }
 
-        matrix[0][3] += matrix[0][0] * v.x + matrix[0][1] * v.y + matrix[0][2] * v.z
+    fun translate(v: Float3): Transform {
+        matrix *= translation(v)
+
+        //transposeFast(matrix)
+
+        /*matrix[0][3] += matrix[0][0] * v.x + matrix[0][1] * v.y + matrix[0][2] * v.z
         matrix[1][3] += matrix[1][0] * v.x + matrix[1][1] * v.y + matrix[1][2] * v.z
         matrix[2][3] += matrix[2][0] * v.x + matrix[2][1] * v.y + matrix[2][2] * v.z
         matrix[3][3] += matrix[3][0] * v.x + matrix[3][1] * v.y + matrix[3][2] * v.z
 
-        transposeFast(matrix)
+        needsTranspose = true*/
 
-        position.xyz = matrix.position
-        forward.xyz = matrix.forward
-        up.xyz = matrix.up
+        //transposeFast(matrix)
 
         return this
     }
@@ -47,9 +55,10 @@ class Transform {
      * @param v: v.x => pitch, v.y => yaw, v.z => roll
      */
     fun rotate(v: Float3): Transform {
-        transposeFast(matrix)
+        matrix *= com.kemp.core.utils.rotation(v)
+        //transposeFast(matrix)
 
-        val roll = radians(v.z)
+        /*val roll = radians(v.z)
         val pitch = radians(v.x)
         val yaw = radians(v.y)
 
@@ -119,17 +128,16 @@ class Transform {
         matrix[2][2] = m22
         matrix[3][2] = m32
 
-        transposeFast(matrix)
+        needsTranspose = true*/
 
-        rotation.xyz = matrix.rotation
-        forward.xyz = matrix.forward
-        up.xyz = matrix.up
+        //transposeFast(matrix)
 
         return this
     }
 
     fun scale(v: Float3): Transform {
-        matrix[0][0] *= v.x
+        matrix *= com.kemp.core.utils.scale(v)
+        /*matrix[0][0] *= v.x
         matrix[0][1] *= v.y
         matrix[0][2] *= v.z
 
@@ -145,9 +153,7 @@ class Transform {
         matrix[3][1] *= v.y
         matrix[3][2] *= v.z
 
-        scale.xyz = matrix.scale
-        forward.xyz = matrix.forward
-        up.xyz = matrix.up
+        needsTranspose = true*/
 
         return this
     }
