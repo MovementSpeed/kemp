@@ -3,6 +3,7 @@ package com.kemp.core.playground
 import com.artemis.WorldConfigurationBuilder
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
+import com.kemp.core.component
 import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.scene.Scene
@@ -17,9 +18,8 @@ class PlaygroundGame : Game {
     override fun ready(scene: Scene) {
         val camera = scene.mainCamera()
 
-        val transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
-        val cameraTransform = transformMapper.get(camera)
-        cameraTransform.transform.position(Float3(0f, 3f, -20f))
+        val cameraTransform = camera.component<TransformComponent>()
+        cameraTransform.transform.position(Float3(0f, 3f, -30f))
 
         Kemp.coroutineScope.launch {
             val model = Kemp.assets.loadModel("models", "model.glb")

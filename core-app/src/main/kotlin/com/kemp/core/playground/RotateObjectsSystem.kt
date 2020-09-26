@@ -16,14 +16,14 @@ class RotateObjectsSystem : IteratingSystem() {
         val transformComponent = transformMapper.get(entityId)
         val transform = transformComponent.transform
 
-        float3.x = 0f
+        /*float3.x = 0f
         float3.y = 0f
         float3.z = 0.1f
 
-        transform.translate(float3)
+        transform.translate(float3)*/
 
         float3.x = 0f
-        float3.y = 0.5f
+        float3.y = 0.1f
         float3.z = 0f
 
         transform.rotate(float3)
