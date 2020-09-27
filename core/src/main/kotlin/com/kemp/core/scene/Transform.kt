@@ -47,18 +47,18 @@ class Transform {
         return this
     }
 
-    fun position(v: Position) {
-        translate(-matrix.position)
+    fun position(v: Position): Transform {
+        return translate(-matrix.position)
             .translate(v)
     }
 
-    fun rotation(v: Rotation) {
-        rotate(-matrix.rotation)
+    fun rotation(v: Rotation): Transform {
+        return rotate(-matrix.rotation)
             .rotate(v)
     }
 
-    fun scaling(v: Scale) {
-        scale(-matrix.scale)
+    fun scaling(v: Scale): Transform {
+        return scale(-matrix.scale)
             .scale(v)
     }
 }

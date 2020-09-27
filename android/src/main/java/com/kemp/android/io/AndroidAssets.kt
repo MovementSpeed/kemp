@@ -9,6 +9,7 @@ import com.google.android.filament.gltfio.ResourceLoader
 import com.google.android.filament.utils.*
 import com.kemp.android.fileSeparator
 import com.kemp.android.models.AndroidModel
+import com.kemp.android.rendering.AndroidEnvironment
 import com.kemp.android.rendering.AndroidImageBasedLighting
 import com.kemp.core.Kemp
 import com.kemp.core.ecs.components.CameraNodeComponent
@@ -17,6 +18,7 @@ import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.io.Assets
 import com.kemp.core.models.Model
+import com.kemp.core.rendering.Environment
 import com.kemp.core.rendering.ImageBasedLighting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -67,6 +69,12 @@ class AndroidAssets(private val context: Context,
         val buffer = bufferForFile(path, fileName)
         val indirectLight = KtxLoader.createIndirectLight(engine, buffer)
         return@withContext AndroidImageBasedLighting(indirectLight)
+    }
+
+    override suspend fun loadSkybox(path: String, fileName: String): Environment = withContext(Dispatchers.IO) {
+        val buffer = bufferForFile(path, fileName)
+        val skybox = KtxLoader.createSkybox(engine, buffer)
+        return@withContext AndroidEnvironment(skybox)
     }
 
     private fun bufferForFile(path: String, fileName: String): ByteBuffer {

@@ -3,6 +3,8 @@ package com.kemp.core.config
 import com.kemp.core.utils.Color
 
 class GraphicsConfig {
+    var configChanged: () -> Unit = {}
+
     var shadowsEnabled = true
     var postProcessing = true
     var dithering = Dithering.NONE

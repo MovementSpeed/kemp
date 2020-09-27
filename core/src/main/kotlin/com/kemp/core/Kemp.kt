@@ -20,6 +20,10 @@ object Kemp {
     lateinit var world: World
 
     fun start() {
+        graphicsConfig.configChanged = {
+            application.graphicsConfigChanged(graphicsConfig)
+        }
+
         game.ready(scene)
         application.update = { frameTimeNanos ->
             // Update engine systems

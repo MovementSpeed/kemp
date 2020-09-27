@@ -1,5 +1,7 @@
 package com.kemp.core.app
 
+import com.kemp.core.config.GraphicsConfig
+
 /**
  * Platforms should implement their own application mechanism,
  * and callback updates to the core. The core doesn't know how
@@ -8,4 +10,5 @@ package com.kemp.core.app
  */
 interface Application {
     var update: (frameTimeNanos: Long) -> Unit
+    fun graphicsConfigChanged(graphicsConfig: GraphicsConfig)
 }

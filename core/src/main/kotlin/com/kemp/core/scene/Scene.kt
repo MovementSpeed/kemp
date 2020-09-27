@@ -2,6 +2,7 @@ package com.kemp.core.scene
 
 import com.kemp.core.Entity
 import com.kemp.core.SceneEntity
+import com.kemp.core.rendering.Environment
 import com.kemp.core.rendering.ImageBasedLighting
 
 interface Scene {
@@ -11,4 +12,5 @@ interface Scene {
     fun removeEntity(entity: SceneEntity)
     fun removeEntities(entities: List<SceneEntity>)
     fun imageBasedLighting(ibl: ImageBasedLighting)
+    fun environment(environment: Environment)
 }

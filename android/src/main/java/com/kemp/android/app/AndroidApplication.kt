@@ -23,6 +23,7 @@ import com.kemp.android.ecs.systems.AndroidTransformSystem
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.app.Application
+import com.kemp.core.config.GraphicsConfig
 import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.TransformComponent
@@ -152,7 +153,7 @@ class AndroidApplication(private val context: Context,
         filamentView = engine.createView()
         filamentView.scene = scene
 
-        setupConfig()
+        graphicsConfigChanged(Kemp.graphicsConfig)
 
         assetLoader = AssetLoader(engine, MaterialProvider(engine), EntityManager.get())
         resourceLoader = ResourceLoader(engine, true, false)
@@ -237,9 +238,7 @@ class AndroidApplication(private val context: Context,
         )
     }
 
-    private fun setupConfig() {
-        val graphicsConfig = Kemp.graphicsConfig
-
+    override fun graphicsConfigChanged(graphicsConfig: GraphicsConfig) {
         filamentView.setShadowsEnabled(graphicsConfig.shadowsEnabled)
         filamentView.isPostProcessingEnabled = graphicsConfig.postProcessing
         filamentView.dithering = View.Dithering.valueOf(graphicsConfig.dithering.name)
