@@ -1,7 +1,7 @@
 package com.kemp.core.config
 
 class AmbientOcclusionOptions {
-    var type: AmbientOcclusion = AmbientOcclusion.NONE
+    var enabled: Boolean = false
 
     /**
      * Ambient Occlusion radius in meters, between 0 and ~10.

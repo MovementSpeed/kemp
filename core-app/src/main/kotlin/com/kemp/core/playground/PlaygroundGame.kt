@@ -4,6 +4,7 @@ import com.artemis.WorldConfigurationBuilder
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
 import com.kemp.core.component
+import com.kemp.core.config.AmbientOcclusion
 import com.kemp.core.config.AntiAliasing
 import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.TransformComponent
@@ -19,6 +20,7 @@ class PlaygroundGame : Game {
     override fun ready(scene: Scene) {
         Kemp.graphicsConfig.antiAliasing = AntiAliasing.FXAA
         Kemp.graphicsConfig.bloomOptions.enabled = true
+        Kemp.graphicsConfig.ambientOcclusionOptions.enabled = true
         Kemp.graphicsConfig.configChanged()
 
         val camera = scene.mainCamera()

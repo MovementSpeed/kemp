@@ -311,7 +311,7 @@ class AndroidApplication(private val context: Context,
         ambientOcclusionOptions.power = confAmbientOcclusionOptions.power
         ambientOcclusionOptions.intensity = confAmbientOcclusionOptions.intensity
         ambientOcclusionOptions.bias = confAmbientOcclusionOptions.bias
-        filamentView.ambientOcclusion = View.AmbientOcclusion.valueOf(confAmbientOcclusionOptions.type.name)
+        ambientOcclusionOptions.enabled = confAmbientOcclusionOptions.enabled
         filamentView.ambientOcclusionOptions = ambientOcclusionOptions
 
         val dynamicResolutionOptions = View.DynamicResolutionOptions()
