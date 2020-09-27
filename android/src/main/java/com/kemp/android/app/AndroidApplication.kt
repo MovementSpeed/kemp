@@ -152,102 +152,7 @@ class AndroidApplication(private val context: Context,
         filamentView = engine.createView()
         filamentView.scene = scene
 
-        val graphicsConfig = Kemp.graphicsConfig
-
-        filamentView.setShadowsEnabled(graphicsConfig.shadowsEnabled)
-        filamentView.isPostProcessingEnabled = graphicsConfig.postProcessing
-        filamentView.dithering = View.Dithering.valueOf(graphicsConfig.dithering.name)
-        filamentView.antiAliasing = View.AntiAliasing.valueOf(graphicsConfig.antiAliasing.name)
-
-        val co = Renderer.ClearOptions()
-        co.clear = true
-        co.clearColor = graphicsConfig.clearColor.array
-        renderer.clearOptions = co
-
-        val fogOptions = View.FogOptions()
-        val confFogOptions = graphicsConfig.fogOptions
-        fogOptions.distance = confFogOptions.distance
-        fogOptions.enabled = confFogOptions.enabled
-        fogOptions.color = confFogOptions.color.array
-        fogOptions.maximumOpacity = confFogOptions.maximumOpacity
-        fogOptions.inScatteringStart = confFogOptions.inScatteringStart
-        fogOptions.inScatteringSize = confFogOptions.inScatteringSize
-        fogOptions.heightFalloff = confFogOptions.heightFalloff
-        fogOptions.fogColorFromIbl = confFogOptions.fogColorFromIbl
-        fogOptions.density = confFogOptions.density
-        filamentView.fogOptions = fogOptions
-
-        val bloomOptions = View.BloomOptions()
-        val confBloomOptions = graphicsConfig.bloomOptions
-        bloomOptions.enabled = confBloomOptions.enabled
-        bloomOptions.threshold = confBloomOptions.threshold
-        bloomOptions.strength = confBloomOptions.strength
-        bloomOptions.resolution = confBloomOptions.resolution
-        bloomOptions.levels = confBloomOptions.levels
-        bloomOptions.dirtStrength = confBloomOptions.dirtStrength
-        bloomOptions.blendingMode = View.BloomOptions.BlendingMode.valueOf(confBloomOptions.blendingMode.name)
-        bloomOptions.anamorphism = confBloomOptions.anamorphism
-        filamentView.bloomOptions = bloomOptions
-
-        val vignetteOptions = View.VignetteOptions()
-        val confVignetteOptions = graphicsConfig.vignetteOptions
-        vignetteOptions.roundness = confVignetteOptions.roundness
-        vignetteOptions.midPoint = confVignetteOptions.midPoint
-        vignetteOptions.feather = confVignetteOptions.feather
-        vignetteOptions.enabled = confVignetteOptions.enabled
-        vignetteOptions.color = confVignetteOptions.color.array
-        filamentView.vignetteOptions = vignetteOptions
-
-        val confColorGrading = graphicsConfig.colorGradingOptions
-        val colorGradingOptions = ColorGrading.Builder()
-            .whiteBalance(confColorGrading.whiteBalanceTemperature, confColorGrading.whiteBalanceTint)
-            .toneMapping(ColorGrading.ToneMapping.valueOf(confColorGrading.toneMapping.name))
-            .saturation(confColorGrading.saturation)
-            .quality(ColorGrading.QualityLevel.valueOf(confColorGrading.quality.name))
-            .contrast(confColorGrading.contrast)
-            .channelMixer(confColorGrading.channelMixerRed.array, confColorGrading.channelMixerGreen.array, confColorGrading.channelMixerBlue.array)
-            .build(engine)
-        filamentView.colorGrading = colorGradingOptions
-
-        val depthOfFieldOptions = View.DepthOfFieldOptions()
-        val confDepthOfFieldOptions = graphicsConfig.depthOfFieldOptions
-        depthOfFieldOptions.maxApertureDiameter = confDepthOfFieldOptions.maxApertureDiameter
-        depthOfFieldOptions.blurScale = confDepthOfFieldOptions.blurScale
-        depthOfFieldOptions.enabled = confDepthOfFieldOptions.enabled
-        depthOfFieldOptions.focusDistance = confDepthOfFieldOptions.focusDistance
-        filamentView.depthOfFieldOptions = depthOfFieldOptions
-
-
-
-        /*val ambientOcclusionOptions = View.AmbientOcclusionOptions()
-        filamentView.ambientOcclusion = View.AmbientOcclusion.SSAO
-        filamentView.ambientOcclusionOptions = ambientOcclusionOptions
-
-        filamentView.antiAliasing = View.AntiAliasing.FXAA
-
-        val bloomOptions = View.BloomOptions()
-        bloomOptions.enabled = true
-        filamentView.bloomOptions = bloomOptions
-
-        val dofOptions = View.DepthOfFieldOptions()
-        dofOptions.enabled = false
-        dofOptions.focusDistance = 0.1f
-        filamentView.depthOfFieldOptions = dofOptions
-
-        //filamentView.dithering = View.Dithering.TEMPORAL
-
-        val drOptions = View.DynamicResolutionOptions()
-        drOptions.enabled = true
-        filamentView.dynamicResolutionOptions = drOptions
-
-        val fogOptions = View.FogOptions()
-        fogOptions.enabled = false
-        fogOptions.distance = 20f
-        filamentView.fogOptions = fogOptions
-
-        val renderQuality = View.RenderQuality()
-        renderQuality.hdrColorBuffer = View.QualityLevel.ULTRA
-        //filamentView.renderQuality = renderQuality*/
+        setupConfig()
 
         assetLoader = AssetLoader(engine, MaterialProvider(engine), EntityManager.get())
         resourceLoader = ResourceLoader(engine, true, false)
@@ -330,5 +235,93 @@ class AndroidApplication(private val context: Context,
             up.y.toDouble(),
             up.z.toDouble()
         )
+    }
+
+    private fun setupConfig() {
+        val graphicsConfig = Kemp.graphicsConfig
+
+        filamentView.setShadowsEnabled(graphicsConfig.shadowsEnabled)
+        filamentView.isPostProcessingEnabled = graphicsConfig.postProcessing
+        filamentView.dithering = View.Dithering.valueOf(graphicsConfig.dithering.name)
+        filamentView.antiAliasing = View.AntiAliasing.valueOf(graphicsConfig.antiAliasing.name)
+
+        val co = Renderer.ClearOptions()
+        co.clear = true
+        co.clearColor = graphicsConfig.clearColor.array
+        renderer.clearOptions = co
+
+        val fogOptions = View.FogOptions()
+        val confFogOptions = graphicsConfig.fogOptions
+        fogOptions.distance = confFogOptions.distance
+        fogOptions.enabled = confFogOptions.enabled
+        fogOptions.color = confFogOptions.color.array
+        fogOptions.maximumOpacity = confFogOptions.maximumOpacity
+        fogOptions.inScatteringStart = confFogOptions.inScatteringStart
+        fogOptions.inScatteringSize = confFogOptions.inScatteringSize
+        fogOptions.heightFalloff = confFogOptions.heightFalloff
+        fogOptions.fogColorFromIbl = confFogOptions.fogColorFromIbl
+        fogOptions.density = confFogOptions.density
+        filamentView.fogOptions = fogOptions
+
+        val bloomOptions = View.BloomOptions()
+        val confBloomOptions = graphicsConfig.bloomOptions
+        bloomOptions.enabled = confBloomOptions.enabled
+        bloomOptions.threshold = confBloomOptions.threshold
+        bloomOptions.strength = confBloomOptions.strength
+        bloomOptions.resolution = confBloomOptions.resolution
+        bloomOptions.levels = confBloomOptions.levels
+        bloomOptions.dirtStrength = confBloomOptions.dirtStrength
+        bloomOptions.blendingMode = View.BloomOptions.BlendingMode.valueOf(confBloomOptions.blendingMode.name)
+        bloomOptions.anamorphism = confBloomOptions.anamorphism
+        filamentView.bloomOptions = bloomOptions
+
+        val vignetteOptions = View.VignetteOptions()
+        val confVignetteOptions = graphicsConfig.vignetteOptions
+        vignetteOptions.roundness = confVignetteOptions.roundness
+        vignetteOptions.midPoint = confVignetteOptions.midPoint
+        vignetteOptions.feather = confVignetteOptions.feather
+        vignetteOptions.enabled = confVignetteOptions.enabled
+        vignetteOptions.color = confVignetteOptions.color.array
+        filamentView.vignetteOptions = vignetteOptions
+
+        val confColorGrading = graphicsConfig.colorGradingOptions
+        val colorGradingOptions = ColorGrading.Builder()
+            .whiteBalance(confColorGrading.whiteBalanceTemperature, confColorGrading.whiteBalanceTint)
+            .toneMapping(ColorGrading.ToneMapping.valueOf(confColorGrading.toneMapping.name))
+            .saturation(confColorGrading.saturation)
+            .quality(ColorGrading.QualityLevel.valueOf(confColorGrading.quality.name))
+            .contrast(confColorGrading.contrast)
+            .channelMixer(confColorGrading.channelMixerRed.array, confColorGrading.channelMixerGreen.array, confColorGrading.channelMixerBlue.array)
+            .build(engine)
+        filamentView.colorGrading = colorGradingOptions
+
+        val depthOfFieldOptions = View.DepthOfFieldOptions()
+        val confDepthOfFieldOptions = graphicsConfig.depthOfFieldOptions
+        depthOfFieldOptions.maxApertureDiameter = confDepthOfFieldOptions.maxApertureDiameter
+        depthOfFieldOptions.blurScale = confDepthOfFieldOptions.blurScale
+        depthOfFieldOptions.enabled = confDepthOfFieldOptions.enabled
+        depthOfFieldOptions.focusDistance = confDepthOfFieldOptions.focusDistance
+        filamentView.depthOfFieldOptions = depthOfFieldOptions
+
+        val ambientOcclusionOptions = View.AmbientOcclusionOptions()
+        val confAmbientOcclusionOptions = graphicsConfig.ambientOcclusionOptions
+        ambientOcclusionOptions.upsampling = View.QualityLevel.valueOf(confAmbientOcclusionOptions.upsampling.name)
+        ambientOcclusionOptions.resolution = confAmbientOcclusionOptions.resolution
+        ambientOcclusionOptions.radius = confAmbientOcclusionOptions.radius
+        ambientOcclusionOptions.quality = View.QualityLevel.valueOf(confAmbientOcclusionOptions.quality.name)
+        ambientOcclusionOptions.power = confAmbientOcclusionOptions.power
+        ambientOcclusionOptions.intensity = confAmbientOcclusionOptions.intensity
+        ambientOcclusionOptions.bias = confAmbientOcclusionOptions.bias
+        filamentView.ambientOcclusion = View.AmbientOcclusion.valueOf(confAmbientOcclusionOptions.type.name)
+        filamentView.ambientOcclusionOptions = ambientOcclusionOptions
+
+        val dynamicResolutionOptions = View.DynamicResolutionOptions()
+        val confDynamicResolutionOptions = graphicsConfig.dynamicResolutionOptions
+        dynamicResolutionOptions.enabled = confDynamicResolutionOptions.enabled
+        dynamicResolutionOptions.quality = View.QualityLevel.valueOf(confDynamicResolutionOptions.quality.name)
+        dynamicResolutionOptions.minScale = confDynamicResolutionOptions.minScale
+        dynamicResolutionOptions.maxScale = confDynamicResolutionOptions.maxScale
+        dynamicResolutionOptions.homogeneousScaling = confDynamicResolutionOptions.homogeneousScaling
+        filamentView.dynamicResolutionOptions = dynamicResolutionOptions
     }
 }
