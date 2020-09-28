@@ -1,8 +1,22 @@
 package com.kemp.core.utils
 
 object Pool {
+    private val float2Pool = mutableListOf<Float2>()
     private val float3Pool = mutableListOf<Float3>()
     private val float4Pool = mutableListOf<Float4>()
+
+    fun useFloat2(amount: Int, a: (List<Float2>) -> Unit) {
+        if (float2Pool.size < amount) repeat(amount - float2Pool.size) {
+            float2Pool.add(Float2())
+        }
+
+        a(float2Pool)
+    }
+
+    fun useFloat2(): Float2 {
+        if (float2Pool.size < 1) float2Pool.add(Float2())
+        return float2Pool[0]
+    }
 
     fun useFloat3(amount: Int, a: (List<Float3>) -> Unit) {
         if (float3Pool.size < amount) repeat(amount - float3Pool.size) {

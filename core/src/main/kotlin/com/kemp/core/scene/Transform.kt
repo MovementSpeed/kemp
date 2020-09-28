@@ -17,7 +17,7 @@ class Transform {
     val array: FloatArray
         get() = transpose(matrix).toFloatArray()
 
-    private var matrix = com.kemp.core.utils.scale(scale) *
+    var matrix: Mat4 = com.kemp.core.utils.scale(scale) *
             com.kemp.core.utils.rotation(rotation) *
             translation(position)
 

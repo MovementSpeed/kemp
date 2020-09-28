@@ -182,7 +182,7 @@ class AndroidApplication(private val context: Context,
         choreographer = Choreographer.getInstance()
         displayHelper = DisplayHelper(context)
 
-        uiHelper = UiHelper(UiHelper.ContextErrorPolicy.CHECK)
+        uiHelper = UiHelper(UiHelper.ContextErrorPolicy.DONT_CHECK)
         uiHelper.renderCallback = this
 
         uiHelper.attachTo(view)

@@ -3,6 +3,7 @@ package com.kemp.android.playground
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.kemp.android.app.AndroidApplication
+import com.kemp.android.input.AndroidTouchInput
 import com.kemp.android.io.AndroidAssets
 import com.kemp.android.scene.AndroidScene
 import com.kemp.core.Kemp
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         ll_root.addView(androidApplication.view)
+        val touchInput = AndroidTouchInput(androidApplication.view)
 
         val androidAssets = AndroidAssets(
             this,
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         lifecycle.addObserver(androidApplication)
 
         Kemp.application = androidApplication
+        Kemp.touchInput = touchInput
         Kemp.assets = androidAssets
         Kemp.scene = androidScene
         Kemp.game = playgroundGame

@@ -8,11 +8,14 @@ import com.kemp.core.config.AmbientOcclusion
 import com.kemp.core.config.AntiAliasing
 import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.TransformComponent
+import com.kemp.core.models.Model
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
 import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
+    private var model: Model? = null
+
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
         worldConfigurationBuilder.with(RotateObjectsSystem())
     }
@@ -27,12 +30,11 @@ class PlaygroundGame : Game {
 
         val cameraTransform = camera.component<TransformComponent>()
         cameraTransform.transform
-            .position(Float3(40f, 3f, -40f))
-            .rotate(Float3(0f, -45f, 0f))
+            .position(Float3(0f, 90f, -250f))
 
         Kemp.coroutineScope.launch {
-            val model = Kemp.assets.loadModel("models", "model.glb")
-            model?.let { scene.addEntities(model.entities()) }
+            model = Kemp.assets.loadModel("models", "test.glb")
+            model?.let { scene.addEntities(it.entities()) }
 
             val ibl = Kemp.assets.loadIndirectLight("lighting", "environment_ibl.ktx")
             scene.imageBasedLighting(ibl)
