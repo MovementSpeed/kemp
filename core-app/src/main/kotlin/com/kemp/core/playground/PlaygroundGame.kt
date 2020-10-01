@@ -4,13 +4,12 @@ import com.artemis.WorldConfigurationBuilder
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
 import com.kemp.core.component
-import com.kemp.core.config.AmbientOcclusion
 import com.kemp.core.config.AntiAliasing
-import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.models.Model
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
+import com.kemp.core.utils.length
 import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
@@ -45,5 +44,7 @@ class PlaygroundGame : Game {
     }
 
     override fun update(delta: Float) {
+        val pointerVelocity = Kemp.touchInput.pointerDelta(0)
+        println(length(pointerVelocity))
     }
 }

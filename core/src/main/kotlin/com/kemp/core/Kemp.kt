@@ -33,6 +33,9 @@ object Kemp {
 
             // Update current game
             game.update(0f)
+
+            // Update
+            touchInput.update()
         }
     }
 }
