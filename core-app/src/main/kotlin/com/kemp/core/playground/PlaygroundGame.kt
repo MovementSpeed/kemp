@@ -6,6 +6,7 @@ import com.kemp.core.app.Game
 import com.kemp.core.component
 import com.kemp.core.config.AntiAliasing
 import com.kemp.core.ecs.components.TransformComponent
+import com.kemp.core.input.Keys
 import com.kemp.core.models.Model
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
@@ -44,7 +45,7 @@ class PlaygroundGame : Game {
     }
 
     override fun update(delta: Float) {
-        val pointerVelocity = Kemp.touchInput.pointerDelta(0)
-        println(length(pointerVelocity))
+        //val keyPressed = Kemp.keyboardInput.key(Keys.C)
+        //println(keyPressed)
     }
 }
