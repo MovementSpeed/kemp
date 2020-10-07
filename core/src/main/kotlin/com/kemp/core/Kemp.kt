@@ -4,8 +4,8 @@ import com.artemis.World
 import com.kemp.core.app.Application
 import com.kemp.core.app.Game
 import com.kemp.core.config.GraphicsConfig
-import com.kemp.core.input.KeyboardInput
-import com.kemp.core.input.TouchInput
+import com.kemp.core.input.methods.KeyboardInput
+import com.kemp.core.input.methods.TouchInput
 import com.kemp.core.io.Assets
 import com.kemp.core.scene.Scene
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +38,7 @@ object Kemp {
 
             // Update
             touchInput.update()
+            keyboardInput.update()
         }
     }
 }

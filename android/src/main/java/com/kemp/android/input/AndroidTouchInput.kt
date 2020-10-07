@@ -3,7 +3,7 @@ package com.kemp.android.input
 import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
-import com.kemp.core.input.TouchInput
+import com.kemp.core.input.methods.TouchInput
 import com.kemp.core.utils.Float2
 import com.kemp.core.utils.Pool
 import kotlin.math.roundToInt

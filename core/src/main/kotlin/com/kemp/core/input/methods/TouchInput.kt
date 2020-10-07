@@ -1,4 +1,4 @@
-package com.kemp.core.input
+package com.kemp.core.input.methods
 
 import com.kemp.core.utils.Float2
 

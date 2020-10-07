@@ -7,6 +7,7 @@ import com.kemp.core.component
 import com.kemp.core.config.AntiAliasing
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.input.Keys
+import com.kemp.core.input.touch.TouchStick
 import com.kemp.core.models.Model
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
     private var model: Model? = null
+    private val touchStick = TouchStick(400f, 400f, 300f)
 
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
         worldConfigurationBuilder.with(RotateObjectsSystem())
@@ -27,10 +29,8 @@ class PlaygroundGame : Game {
         Kemp.graphicsConfig.configChanged()
 
         val camera = scene.mainCamera()
-
         val cameraTransform = camera.component<TransformComponent>()
-        cameraTransform.transform
-            .position(Float3(0f, 90f, -250f))
+        cameraTransform.transform.position(Float3(0f, 90f, -250f))
 
         Kemp.coroutineScope.launch {
             model = Kemp.assets.loadModel("models", "test.glb")
@@ -45,7 +45,9 @@ class PlaygroundGame : Game {
     }
 
     override fun update(delta: Float) {
-        //val keyPressed = Kemp.keyboardInput.key(Keys.C)
-        //println(keyPressed)
+        val touchCoords = Kemp.touchInput.pointer(0)
+        touchStick.touchAt(touchCoords.x, touchCoords.y)
+
+        println(touchStick.power)
     }
 }

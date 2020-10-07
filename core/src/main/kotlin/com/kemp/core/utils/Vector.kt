@@ -582,6 +582,11 @@ inline fun length(v: Float2) = sqrt(v.x * v.x + v.y * v.y)
 inline fun length2(v: Float2) = v.x * v.x + v.y * v.y
 inline fun distance(a: Float2, b: Float2) = length(a - b)
 inline fun dot(a: Float2, b: Float2) = a.x * b.x + a.y * b.y
+
+inline fun distance(aX: Float, aY: Float, bX: Float, bY: Float): Float {
+    return sqrt((aX - bX) * (aX - bX) + (aY - bY) * (aY - bY))
+}
+
 fun normalize(v: Float2): Float2 {
     val l = 1.0f / length(v)
     return Float2(v.x * l, v.y * l)
