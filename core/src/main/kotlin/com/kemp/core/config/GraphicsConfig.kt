@@ -5,6 +5,8 @@ import com.kemp.core.utils.Color
 class GraphicsConfig {
     var configChanged: () -> Unit = {}
 
+    var width = 0
+    var height = 0
     var shadowsEnabled = true
     var postProcessing = true
     var dithering = Dithering.NONE

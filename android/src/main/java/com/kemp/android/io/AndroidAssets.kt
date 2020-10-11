@@ -10,6 +10,7 @@ import com.kemp.android.fileSeparator
 import com.kemp.android.models.AndroidModel
 import com.kemp.android.rendering.AndroidEnvironment
 import com.kemp.android.rendering.AndroidImageBasedLighting
+import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
@@ -50,18 +51,20 @@ class AndroidAssets(
 
             val model = AndroidModel(ast)
             val root = model.root()
-            setupModelEntity(model, true, fileName, root)
+            val name = fileName.takeWhile { it != '.' }
+            val entity = setupModelEntity(model, true, name, root)
+            model.entity = entity
 
             val entities = model.entities()
             entities.forEach { implementationEntity ->
-                setupModelEntity(model, false, fileName, implementationEntity)
+                setupModelEntity(model, false, name, implementationEntity)
             }
 
             model
         }
     }
 
-    private fun setupModelEntity(model: Model, root: Boolean, baseName: String, implementationEntity: Int) {
+    private fun setupModelEntity(model: Model, root: Boolean, baseName: String, implementationEntity: Int): Entity {
         val kempEntity = Kemp.world.create()
 
         val entityAssociationComponent = entityAssociationMapper.create(kempEntity)
@@ -78,6 +81,8 @@ class AndroidAssets(
         val nodeComponent = nodeMapper.create(kempEntity)
         val nodeName = if (!root) model.nameOf(implementationEntity) else "root"
         nodeComponent.name = "${baseName}_$nodeName"
+
+        return kempEntity
     }
 
     override suspend fun loadIndirectLight(path: String, fileName: String): ImageBasedLighting =

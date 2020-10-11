@@ -5,6 +5,7 @@ import com.kemp.core.utils.Float3
 typealias Seconds = Float
 typealias Entity = Int
 typealias SceneEntity = Int
+typealias Name = String
 
 typealias Texture = Any
 typealias TextureSampler = Any

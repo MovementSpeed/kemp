@@ -34,6 +34,7 @@ class AndroidApplication(
     private val ecsConfig: (androidApplication: AndroidApplication, worldConfigBuilder: WorldConfigurationBuilder) -> Unit = { _, _ -> }
 ) : Application, UiHelper.RendererCallback, LifecycleObserver,
     AttachStateListener {
+    override var ready: () -> Unit = {}
     override var update: (frameTimeNanos: Long) -> Unit = {}
 
     var ecsCameraEntity: Entity = -1
@@ -59,7 +60,7 @@ class AndroidApplication(
 
     // Filament apis
     private var swapChain: SwapChain? = null
-
+    private var readyCalled = false
     private var destroyed = false
 
     private lateinit var renderer: Renderer
@@ -92,6 +93,9 @@ class AndroidApplication(
     }
 
     override fun onResized(width: Int, height: Int) {
+        Kemp.graphicsConfig.width = width
+        Kemp.graphicsConfig.height = height
+
         filamentView.viewport = Viewport(0, 0, width, height)
 
         val aspect = width.toDouble() / height.toDouble()
@@ -128,6 +132,11 @@ class AndroidApplication(
         choreographer.postFrameCallback(frameScheduler)
 
         if (!uiHelper.isReadyToRender) return
+        if (!readyCalled) {
+            readyCalled = true
+            ready()
+        }
+
         val sc = swapChain ?: return
 
         if (renderer.beginFrame(sc, frameTimeNanos)) {
@@ -245,7 +254,7 @@ class AndroidApplication(
     }
 
     override fun graphicsConfigChanged(graphicsConfig: GraphicsConfig) {
-        filamentView.setShadowsEnabled(graphicsConfig.shadowsEnabled)
+        filamentView.setShadowingEnabled(graphicsConfig.shadowsEnabled)
         filamentView.isPostProcessingEnabled = graphicsConfig.postProcessing
         filamentView.dithering = View.Dithering.valueOf(graphicsConfig.dithering.name)
         filamentView.antiAliasing = View.AntiAliasing.valueOf(graphicsConfig.antiAliasing.name)
@@ -307,7 +316,7 @@ class AndroidApplication(
         val depthOfFieldOptions = View.DepthOfFieldOptions()
         val confDepthOfFieldOptions = graphicsConfig.depthOfFieldOptions
         depthOfFieldOptions.maxApertureDiameter = confDepthOfFieldOptions.maxApertureDiameter
-        depthOfFieldOptions.blurScale = confDepthOfFieldOptions.blurScale
+        depthOfFieldOptions.cocScale = confDepthOfFieldOptions.blurScale
         depthOfFieldOptions.enabled = confDepthOfFieldOptions.enabled
         depthOfFieldOptions.focusDistance = confDepthOfFieldOptions.focusDistance
         filamentView.depthOfFieldOptions = depthOfFieldOptions

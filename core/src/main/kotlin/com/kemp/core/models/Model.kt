@@ -1,18 +1,20 @@
 package com.kemp.core.models
 
 import com.kemp.core.Entity
+import com.kemp.core.SceneEntity
 import com.kemp.core.utils.Box
 
 interface Model {
-    fun root(): Entity
-    fun lights(): List<Entity>
-    fun cameras(): List<Entity>
-    fun entity(name: String): Entity
-    fun entities(): List<Entity>
-    fun entities(name: String): List<Entity>
-    fun entitiesStartingWith(name: String): List<Entity>
+    fun entity(): Entity
+    fun root(): SceneEntity
+    fun lights(): List<SceneEntity>
+    fun cameras(): List<SceneEntity>
+    fun entity(name: String): SceneEntity
+    fun entities(): List<SceneEntity>
+    fun entities(name: String): List<SceneEntity>
+    fun entitiesStartingWith(name: String): List<SceneEntity>
     fun materials(): List<MaterialInstance>
     fun boundingBox(): Box
-    fun nameOf(entity: Entity): String
+    fun nameOf(entity: SceneEntity): String
     fun animator(): ModelAnimator
 }

@@ -30,7 +30,10 @@ object Kemp {
             application.graphicsConfigChanged(graphicsConfig)
         }
 
-        game.ready(scene)
+        application.ready = {
+            game.ready(scene)
+        }
+
         application.update = { frameTimeNanos ->
             // Update engine systems
             world.process()

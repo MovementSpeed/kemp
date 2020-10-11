@@ -9,6 +9,7 @@ import com.kemp.core.config.GraphicsConfig
  * running, to update all core systems.
  */
 interface Application {
+    var ready: () -> Unit
     var update: (frameTimeNanos: Long) -> Unit
     fun graphicsConfigChanged(graphicsConfig: GraphicsConfig)
 }

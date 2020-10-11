@@ -29,13 +29,29 @@ class PlaygroundGame : Game {
 
         val camera = scene.mainCamera()
         val cameraTransform = camera.component<TransformComponent>()
-        cameraTransform.transform.position(Float3(0f, 90f, -250f))
-
-        Kemp.ui.createTouchStick(400f, 400f, 200f)
+        cameraTransform.transform.position(Float3(-200f, 90f, -200f))
+            .rotate(Float3(0f, 45f, 0f))
 
         Kemp.coroutineScope.launch {
-            model = Kemp.assets.loadModel("models", "test.glb")
-            model?.let { scene.addEntities(it.entities()) }
+            model = Kemp.assets.loadModel("models", "test_2.glb")
+            model?.apply {
+                scene.addEntities(entities())
+
+                val entity = entity()
+                val entityTransform = entity.component<TransformComponent>()
+                entityTransform.transform.scale(Float3(4f, 4f, 4f))
+
+                val screenWidth = Kemp.graphicsConfig.width
+                val screenHeight = Kemp.graphicsConfig.height
+                val radius = 200f
+
+                Kemp.ui.createTouchStick(
+                    entity,
+                    "rotation",
+                    screenWidth / 2f,
+                    screenHeight.toFloat() - radius - 64f,
+                    radius)
+            }
 
             val ibl = Kemp.assets.loadIndirectLight("lighting", "environment_ibl.ktx")
             scene.imageBasedLighting(ibl)

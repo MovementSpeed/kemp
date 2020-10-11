@@ -4,20 +4,22 @@ import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.systems.IteratingSystem
 import com.kemp.core.Kemp
-import com.kemp.core.ecs.components.TouchStickComponent
+import com.kemp.core.ecs.components.TouchSticksComponent
 
-@All(TouchStickComponent::class)
+@All(TouchSticksComponent::class)
 class TouchStickSystem : IteratingSystem() {
-    private lateinit var touchStickMapper: ComponentMapper<TouchStickComponent>
+    private lateinit var touchSticksMapper: ComponentMapper<TouchSticksComponent>
 
     override fun process(entityId: Int) {
-        val touchStickComponent = touchStickMapper.get(entityId)
-        if (!touchStickComponent.enabled) return
+        val touchStickComponent = touchSticksMapper.get(entityId)
 
-        val touchStick = touchStickComponent.touchStick
-        val pointerPos = Kemp.touchInput.pointer(0)
-        val pointerPressed = Kemp.touchInput.pointerPressed(0)
+        val touchSticks = touchStickComponent.touchSticks.values.filter { it.enabled }
 
-        touchStick.touchAt(pointerPressed, pointerPos.x, pointerPos.y)
+        for (touchStick in touchSticks) {
+            val pointerPos = Kemp.touchInput.pointer(0)
+            val pointerPressed = Kemp.touchInput.pointerPressed(0)
+
+            touchStick.touchAt(pointerPressed, pointerPos.x, pointerPos.y)
+        }
     }
 }

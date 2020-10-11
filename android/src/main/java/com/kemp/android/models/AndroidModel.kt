@@ -8,6 +8,12 @@ import com.kemp.core.models.ModelAnimator
 import com.kemp.core.utils.Box
 
 class AndroidModel(private val filamentAsset: FilamentAsset) : Model {
+    var entity: Entity = -1
+
+    override fun entity(): Entity {
+        return entity
+    }
+
     override fun root(): Entity {
         return filamentAsset.root
     }
