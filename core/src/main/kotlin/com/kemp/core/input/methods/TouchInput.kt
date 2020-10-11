@@ -33,6 +33,14 @@ interface TouchInput {
     fun pointer(index: Int): Float2
 
     /**
+     * Polls the touch pointer with the specified index and returns if it's pressed or not.
+     * @param index the index of the touch pointer. 0 (Zero) means the first finger that touched the screen
+     *              and so on.
+     * @return true if it's pressed, else false.
+     */
+    fun pointerPressed(index: Int): Boolean
+
+    /**
      * Polls the touch pointer with the specified index and returns its change over the X axis (delta)
      * relative to its last X position on the screen.
      * @param index the index of the touch pointer. 0 (Zero) means the first finger that touched the screen

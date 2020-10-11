@@ -16,6 +16,7 @@ class AndroidTouchInput(view: View) : TouchInput, View.OnTouchListener {
     private var pointersY = IntArray(10)
     private var pointersDeltaX = IntArray(10)
     private var pointersDeltaY = IntArray(10)
+    private var pointerPressed = Array<Boolean>(10) { false }
 
     init {
         view.setOnTouchListener(this)
@@ -41,6 +42,10 @@ class AndroidTouchInput(view: View) : TouchInput, View.OnTouchListener {
         float2.x = pointersX[index].toFloat()
         float2.y = pointersY[index].toFloat()
         return float2
+    }
+
+    override fun pointerPressed(index: Int): Boolean {
+        return pointerPressed[index]
     }
 
     override fun pointerDeltaX(index: Int): Float {
@@ -83,6 +88,8 @@ class AndroidTouchInput(view: View) : TouchInput, View.OnTouchListener {
                 x = event.getX(pointerIndex).roundToInt()
                 y = event.getY(pointerIndex).roundToInt()
 
+                pointerPressed[realPointerIndex] = true
+
                 pointersX[realPointerIndex] = x
                 pointersY[realPointerIndex] = y
 
@@ -103,6 +110,8 @@ class AndroidTouchInput(view: View) : TouchInput, View.OnTouchListener {
                 x = event.getX(pointerIndex).roundToInt()
                 y = event.getY(pointerIndex).roundToInt()
 
+                pointerPressed[realPointerIndex] = false
+
                 pointersX[realPointerIndex] = x
                 pointersY[realPointerIndex] = y
 
@@ -119,6 +128,8 @@ class AndroidTouchInput(view: View) : TouchInput, View.OnTouchListener {
 
                     pointersDeltaX[i] = 0
                     pointersDeltaY[i] = 0
+
+                    pointerPressed[i] = false
                 }
 
             MotionEvent.ACTION_MOVE -> {

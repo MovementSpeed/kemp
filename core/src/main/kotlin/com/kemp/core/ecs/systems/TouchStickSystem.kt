@@ -16,6 +16,8 @@ class TouchStickSystem : IteratingSystem() {
 
         val touchStick = touchStickComponent.touchStick
         val pointerPos = Kemp.touchInput.pointer(0)
-        touchStick.touchAt(pointerPos.x, pointerPos.y)
+        val pointerPressed = Kemp.touchInput.pointerPressed(0)
+
+        touchStick.touchAt(pointerPressed, pointerPos.x, pointerPos.y)
     }
 }
