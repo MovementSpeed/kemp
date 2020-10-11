@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
     private var model: Model? = null
-    private val touchStick = TouchStick(400f, 400f, 300f)
 
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
         worldConfigurationBuilder.with(RotateObjectsSystem())
@@ -32,6 +31,8 @@ class PlaygroundGame : Game {
         val cameraTransform = camera.component<TransformComponent>()
         cameraTransform.transform.position(Float3(0f, 90f, -250f))
 
+        Kemp.ui.createTouchStick(400f, 400f, 200f)
+
         Kemp.coroutineScope.launch {
             model = Kemp.assets.loadModel("models", "test.glb")
             model?.let { scene.addEntities(it.entities()) }
@@ -45,9 +46,5 @@ class PlaygroundGame : Game {
     }
 
     override fun update(delta: Float) {
-        val touchCoords = Kemp.touchInput.pointer(0)
-        touchStick.touchAt(touchCoords.x, touchCoords.y)
-
-        println(touchStick.power)
     }
 }

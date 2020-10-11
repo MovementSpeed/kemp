@@ -20,6 +20,7 @@ import com.google.android.filament.gltfio.ResourceLoader
 import com.google.android.filament.utils.*
 import com.kemp.android.AttachStateListener
 import com.kemp.android.ecs.systems.AndroidTransformSystem
+import com.kemp.android.ui.KempView
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.app.Application
@@ -28,8 +29,9 @@ import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.TransformComponent
 
-class AndroidApplication(private val context: Context,
-                         private val ecsConfig: (worldConfigBuilder: WorldConfigurationBuilder) -> Unit = {}
+class AndroidApplication(
+    private val context: Context,
+    private val ecsConfig: (androidApplication: AndroidApplication, worldConfigBuilder: WorldConfigurationBuilder) -> Unit = { _, _ -> }
 ) : Application, UiHelper.RendererCallback, LifecycleObserver,
     AttachStateListener {
     override var update: (frameTimeNanos: Long) -> Unit = {}
@@ -37,7 +39,7 @@ class AndroidApplication(private val context: Context,
     var ecsCameraEntity: Entity = -1
 
     lateinit var engine: Engine
-    lateinit var view: SurfaceView
+    lateinit var view: KempView
     lateinit var assetLoader: AssetLoader
     lateinit var resourceLoader: ResourceLoader
     lateinit var scene: Scene
@@ -58,17 +60,18 @@ class AndroidApplication(private val context: Context,
     // Filament apis
     private var swapChain: SwapChain? = null
 
+    private var destroyed = false
+
     private lateinit var renderer: Renderer
     private lateinit var filamentView: View
-
     private lateinit var camera: Camera
 
     init {
         Utils.init()
         initFilament()
+        initView()
         initEcs()
         setupCamera()
-        initView()
     }
 
     // UiHelper.RendererCallback
@@ -137,7 +140,7 @@ class AndroidApplication(private val context: Context,
         val worldConfBuilder = WorldConfigurationBuilder()
             .with(AndroidTransformSystem(engine, engine.transformManager))
 
-        ecsConfig(worldConfBuilder)
+        ecsConfig(this, worldConfBuilder)
 
         Kemp.world = World(worldConfBuilder.build())
         entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
@@ -173,7 +176,7 @@ class AndroidApplication(private val context: Context,
     }
 
     private fun initView() {
-        view = SurfaceView(context)
+        view = KempView(context)
         view.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -191,17 +194,20 @@ class AndroidApplication(private val context: Context,
     }
 
     private fun destroyFilament() {
-        uiHelper.detach()
+        if (!destroyed) {
+            destroyed = true
+            uiHelper.detach()
 
-        assetLoader.destroy()
-        resourceLoader.destroy()
+            assetLoader.destroy()
+            resourceLoader.destroy()
 
-        engine.destroyRenderer(renderer)
-        engine.destroyView(filamentView)
-        engine.destroyScene(scene)
-        engine.destroyCamera(camera)
+            engine.destroyRenderer(renderer)
+            engine.destroyView(filamentView)
+            engine.destroyScene(scene)
+            engine.destroyCamera(camera)
 
-        engine.destroy()
+            engine.destroy()
+        }
     }
 
     private fun setupCamera() {
@@ -290,7 +296,11 @@ class AndroidApplication(private val context: Context,
             .saturation(confColorGrading.saturation)
             .quality(ColorGrading.QualityLevel.valueOf(confColorGrading.quality.name))
             .contrast(confColorGrading.contrast)
-            .channelMixer(confColorGrading.channelMixerRed.array, confColorGrading.channelMixerGreen.array, confColorGrading.channelMixerBlue.array)
+            .channelMixer(
+                confColorGrading.channelMixerRed.array,
+                confColorGrading.channelMixerGreen.array,
+                confColorGrading.channelMixerBlue.array
+            )
             .build(engine)
         filamentView.colorGrading = colorGradingOptions
 
