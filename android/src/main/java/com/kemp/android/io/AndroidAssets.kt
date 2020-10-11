@@ -12,6 +12,7 @@ import com.kemp.android.rendering.AndroidEnvironment
 import com.kemp.android.rendering.AndroidImageBasedLighting
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
+import com.kemp.core.audio.Sound
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
@@ -35,32 +36,60 @@ class AndroidAssets(
     private val transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
     private val nodeMapper = Kemp.world.getMapper(NodeComponent::class.java)
 
-    override suspend fun loadModel(path: String, fileName: String): Model? = withContext(Dispatchers.IO) {
-        //val inputStream = File(context.filesDir, "$path$fileSeparator$fileName").inputStream()
-        val buffer = bufferForFile(path, fileName)
-        val asset = assetLoader.createAssetFromBinary(buffer)
-        return@withContext asset?.let { ast ->
-            withContext(Dispatchers.Main) {
-                resourceLoader.asyncBeginLoad(ast)
-                while (resourceLoader.asyncGetLoadProgress() != 1f) {
-                    resourceLoader.asyncUpdateLoad()
+    override suspend fun loadModel(path: String, fileName: String): Model? =
+        withContext(Dispatchers.IO) {
+            val buffer = bufferForFile(path, fileName)
+            val asset = assetLoader.createAssetFromBinary(buffer)
+            return@withContext asset?.let { ast ->
+                withContext(Dispatchers.Main) {
+                    resourceLoader.asyncBeginLoad(ast)
+                    while (resourceLoader.asyncGetLoadProgress() != 1f) {
+                        resourceLoader.asyncUpdateLoad()
+                    }
                 }
+
+                ast.releaseSourceData()
+
+                val model = AndroidModel(ast)
+                val root = model.root()
+                val name = fileName.takeWhile { it != '.' }
+                val entity = setupModelEntity(model, true, name, root)
+                model.entity = entity
+
+                val entities = model.entities()
+                entities.forEach { implementationEntity ->
+                    setupModelEntity(model, false, name, implementationEntity)
+                }
+
+                model
             }
+        }
 
-            ast.releaseSourceData()
+    override suspend fun loadIndirectLight(path: String, fileName: String): ImageBasedLighting =
+        withContext(Dispatchers.IO) {
+            val buffer = bufferForFile(path, fileName)
+            val indirectLight = KtxLoader.createIndirectLight(engine, buffer)
+            return@withContext AndroidImageBasedLighting(indirectLight)
+        }
 
-            val model = AndroidModel(ast)
-            val root = model.root()
-            val name = fileName.takeWhile { it != '.' }
-            val entity = setupModelEntity(model, true, name, root)
-            model.entity = entity
+    override suspend fun loadSkybox(path: String, fileName: String): Environment =
+        withContext(Dispatchers.IO) {
+            val buffer = bufferForFile(path, fileName)
+            val skybox = KtxLoader.createSkybox(engine, buffer)
+            return@withContext AndroidEnvironment(skybox)
+        }
 
-            val entities = model.entities()
-            entities.forEach { implementationEntity ->
-                setupModelEntity(model, false, name, implementationEntity)
-            }
+    override suspend fun loadSound(path: String, fileName: String): Sound? {
+        val soundFile = context.assets.openFd("$path$fileSeparator$fileName")
+        TODO()
+    }
 
-            model
+    private fun bufferForFile(path: String, fileName: String): ByteBuffer {
+        val inputStream = context.assets.open("$path$fileSeparator$fileName")
+        return inputStream.use { input ->
+            val bytes = ByteArray(input.available())
+            input.read(bytes)
+            ByteBuffer.wrap(bytes)
         }
     }
 
@@ -83,40 +112,5 @@ class AndroidAssets(
         nodeComponent.name = "${baseName}_$nodeName"
 
         return kempEntity
-    }
-
-    override suspend fun loadIndirectLight(path: String, fileName: String): ImageBasedLighting =
-        withContext(Dispatchers.IO) {
-            val buffer = bufferForFile(path, fileName)
-            val indirectLight = KtxLoader.createIndirectLight(engine, buffer)
-            return@withContext AndroidImageBasedLighting(indirectLight)
-        }
-
-    override suspend fun loadSkybox(path: String, fileName: String): Environment = withContext(Dispatchers.IO) {
-        val buffer = bufferForFile(path, fileName)
-        val skybox = KtxLoader.createSkybox(engine, buffer)
-        return@withContext AndroidEnvironment(skybox)
-    }
-
-    private fun bufferForFile(path: String, fileName: String): ByteBuffer {
-        val inputStream = context.assets.open("$path$fileSeparator$fileName")
-        return inputStream.use { input ->
-            val bytes = ByteArray(input.available())
-            input.read(bytes)
-            ByteBuffer.wrap(bytes)
-        }
-    }
-
-    private fun transformToUnitCube(asset: FilamentAsset?, centerPoint: Float3 = Float3(0f, 0f, 0f)) {
-        asset?.let { ast ->
-            val tm = engine.transformManager
-            var center = ast.boundingBox.center.let { v -> Float3(v[0], v[1], v[2]) }
-            val halfExtent = ast.boundingBox.halfExtent.let { v -> Float3(v[0], v[1], v[2]) }
-            val maxExtent = 2.0f * max(halfExtent)
-            val scaleFactor = 2.0f / maxExtent
-            center -= centerPoint / scaleFactor
-            val transform = scale(Float3(scaleFactor)) * translation(-center)
-            tm.setTransform(tm.getInstance(ast.root), transpose(transform).toFloatArray())
-        }
     }
 }
