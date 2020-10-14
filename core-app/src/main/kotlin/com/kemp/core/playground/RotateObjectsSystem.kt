@@ -28,7 +28,6 @@ class RotateObjectsSystem : IteratingSystem() {
         val touchStick = touchSticksComponent.touchSticks["rotation"]
 
         if (name == "test_2_root" && touchStick != null) {
-            println(touchStick.stickVector.x)
             float3.x = 0f
             float3.y = touchStick.stickVector.x
             float3.z = 0f

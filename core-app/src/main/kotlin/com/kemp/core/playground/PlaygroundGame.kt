@@ -58,6 +58,9 @@ class PlaygroundGame : Game {
 
             val env = Kemp.assets.loadSkybox("lighting", "environment_skybox.ktx")
             scene.environment(env)
+
+            val sound = Kemp.assets.loadSound("sounds", "sound.ogg")
+            sound?.loop()
         }
     }
 

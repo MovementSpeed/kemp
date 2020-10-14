@@ -5,5 +5,6 @@ interface Sound {
     fun loop()
     fun stop()
     fun pause()
+    fun resume()
     fun volume(v: Float)
 }
