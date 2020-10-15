@@ -1,10 +1,11 @@
 package com.kemp.android.rendering
 
+import com.google.android.filament.Engine
 import com.google.android.filament.IndirectLight
 import com.kemp.core.rendering.ImageBasedLighting
 import com.kemp.core.utils.Mat3
 
-class AndroidImageBasedLighting(val indirectLight: IndirectLight) : ImageBasedLighting {
+class AndroidImageBasedLighting(private val engine: Engine, val indirectLight: IndirectLight) : ImageBasedLighting {
     override fun intensity(value: Float) {
         indirectLight.intensity = value
     }
@@ -20,5 +21,9 @@ class AndroidImageBasedLighting(val indirectLight: IndirectLight) : ImageBasedLi
     override fun rotation(): Mat3 {
         val arr = indirectLight.getRotation(null)
         return Mat3.of(*arr)
+    }
+
+    override fun dispose() {
+        engine.destroyIndirectLight(indirectLight)
     }
 }

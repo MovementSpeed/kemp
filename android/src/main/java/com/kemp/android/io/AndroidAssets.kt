@@ -2,24 +2,28 @@ package com.kemp.android.io
 
 import android.content.Context
 import android.media.AudioAttributes
+import android.media.MediaPlayer
 import android.media.SoundPool
 import com.google.android.filament.Engine
 import com.google.android.filament.gltfio.AssetLoader
-import com.google.android.filament.gltfio.FilamentAsset
 import com.google.android.filament.gltfio.ResourceLoader
 import com.google.android.filament.utils.*
+import com.kemp.android.audio.AndroidMusic
 import com.kemp.android.audio.AndroidSound
 import com.kemp.android.fileSeparator
+import com.kemp.android.maxAudioStreams
 import com.kemp.android.models.AndroidModel
 import com.kemp.android.rendering.AndroidEnvironment
 import com.kemp.android.rendering.AndroidImageBasedLighting
 import com.kemp.android.suspendLoad
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
+import com.kemp.core.audio.Music
 import com.kemp.core.audio.Sound
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
+import com.kemp.core.interfaces.Disposable
 import com.kemp.core.io.Assets
 import com.kemp.core.models.Model
 import com.kemp.core.rendering.Environment
@@ -27,6 +31,7 @@ import com.kemp.core.rendering.ImageBasedLighting
 import com.kemp.core.utils.Mat4
 import com.kemp.core.utils.transposeFast
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import java.nio.ByteBuffer
 
@@ -39,6 +44,10 @@ class AndroidAssets(
     private val entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
     private val transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
     private val nodeMapper = Kemp.world.getMapper(NodeComponent::class.java)
+
+    private val disposables = mutableListOf<Disposable>()
+
+    private val helperMediaPlayer = MediaPlayer()
     private val soundPool = SoundPool.Builder()
         .run {
             val audioAttributes = AudioAttributes.Builder()
@@ -46,7 +55,7 @@ class AndroidAssets(
                 .setUsage(AudioAttributes.USAGE_GAME)
                 .build()
             setAudioAttributes(audioAttributes)
-            setMaxStreams(16)
+            setMaxStreams(maxAudioStreams)
             build()
         }
 
@@ -61,7 +70,7 @@ class AndroidAssets(
 
                 ast.releaseSourceData()
 
-                val model = AndroidModel(ast)
+                val model = AndroidModel(assetLoader, ast)
                 val root = model.root()
                 val name = fileName.takeWhile { it != '.' }
                 val entity = setupModelEntity(model, true, name, root)
@@ -72,6 +81,7 @@ class AndroidAssets(
                     setupModelEntity(model, false, name, implementationEntity)
                 }
 
+                disposables.add(model)
                 model
             }
         }
@@ -80,22 +90,72 @@ class AndroidAssets(
         withContext(Dispatchers.Default) {
             val buffer = bufferForFile(path, fileName)
             val indirectLight = KtxLoader.createIndirectLight(engine, buffer)
-            return@withContext AndroidImageBasedLighting(indirectLight)
+            val imageBasedLighting = AndroidImageBasedLighting(engine, indirectLight)
+
+            disposables.add(imageBasedLighting)
+            return@withContext imageBasedLighting
         }
 
     override suspend fun loadSkybox(path: String, fileName: String): Environment =
         withContext(Dispatchers.Default) {
             val buffer = bufferForFile(path, fileName)
             val skybox = KtxLoader.createSkybox(engine, buffer)
-            return@withContext AndroidEnvironment(skybox)
+            val environment = AndroidEnvironment(engine, skybox)
+
+            disposables.add(environment)
+            return@withContext environment
         }
 
     override suspend fun loadSound(path: String, fileName: String): Sound? =
         withContext(Dispatchers.Default) {
-            val soundFile = context.assets.openFd("$path$fileSeparator$fileName")
+            val soundFileAsync = async(Dispatchers.IO) {
+                context.assets.openFd("$path$fileSeparator$fileName")
+            }
+
+            val soundFile = soundFileAsync.await()
+            helperMediaPlayer.reset()
+
+            val durationAsync = async(Dispatchers.IO) {
+                helperMediaPlayer.setDataSource(soundFile)
+                helperMediaPlayer.prepare()
+                helperMediaPlayer.duration
+            }
+
+            val duration = durationAsync.await()
+
             val soundId = soundPool.suspendLoad(soundFile)
-            return@withContext AndroidSound(soundPool, soundId)
+            val sound = AndroidSound(soundPool, soundId, duration)
+
+            disposables.add(sound)
+            return@withContext sound
         }
+
+    override suspend fun loadMusic(path: String, fileName: String): Music? =
+        withContext(Dispatchers.Default) {
+            val musicFileAsync = async(Dispatchers.IO) {
+                context.assets.openFd("$path$fileSeparator$fileName")
+            }
+
+            val musicFile = musicFileAsync.await()
+            val mediaPlayer = MediaPlayer()
+
+            val prepareAsync = async(Dispatchers.IO) {
+                mediaPlayer.setDataSource(musicFile)
+                mediaPlayer.prepare()
+            }
+
+            prepareAsync.await()
+            val music = AndroidMusic(mediaPlayer)
+
+            disposables.add(music)
+            return@withContext music
+        }
+
+    override fun dispose() {
+        disposables.forEach { it.dispose() }
+        helperMediaPlayer.release()
+        soundPool.release()
+    }
 
     private fun bufferForFile(path: String, fileName: String): ByteBuffer {
         val inputStream = context.assets.open("$path$fileSeparator$fileName")

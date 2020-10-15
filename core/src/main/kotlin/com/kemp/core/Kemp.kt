@@ -30,6 +30,10 @@ object Kemp {
             application.graphicsConfigChanged(graphicsConfig)
         }
 
+        application.destroy = {
+            assets.dispose()
+        }
+
         application.ready = {
             game.ready(scene)
         }

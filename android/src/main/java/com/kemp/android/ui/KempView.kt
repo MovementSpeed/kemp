@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.SurfaceView
 
 class KempView : SurfaceView {
-    var renderDelegate: RenderDelegate? = null
+    private val renderDelegates: MutableList<AndroidRenderDelegate> = mutableListOf()
 
     constructor(context: Context?) : super(context)
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
@@ -19,6 +19,14 @@ class KempView : SurfaceView {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.let { if (renderDelegate?.draw(it) == true) invalidate() }
+        canvas?.let { canv ->
+            var invalidate = false
+            renderDelegates.forEach { if (it.draw(canv)) invalidate = true }
+            if (invalidate) invalidate()
+        }
+    }
+
+    fun addRenderDelegate(renderDelegate: AndroidRenderDelegate) {
+        renderDelegates.add(renderDelegate)
     }
 }

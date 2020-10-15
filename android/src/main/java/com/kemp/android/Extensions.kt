@@ -1,6 +1,7 @@
 package com.kemp.android
 
 import android.content.res.AssetFileDescriptor
+import android.media.MediaPlayer
 import android.media.SoundPool
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -14,3 +15,19 @@ suspend fun SoundPool.suspendLoad(fd: AssetFileDescriptor): Int =
             }
         }
     }
+
+fun MediaPlayer.play() {
+    isLooping = false
+    seekTo(0)
+    setOnSeekCompleteListener {
+        start()
+    }
+}
+
+fun MediaPlayer.loop() {
+    isLooping = true
+    seekTo(0)
+    setOnSeekCompleteListener {
+        start()
+    }
+}

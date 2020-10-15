@@ -33,7 +33,7 @@ fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceVi
         worldConfig.with(TouchStickSystem())
 
         val androidTouchStickRenderingSystem = AndroidTouchStickRenderingSystem()
-        app.view.renderDelegate = androidTouchStickRenderingSystem
+        app.view.addRenderDelegate(androidTouchStickRenderingSystem)
         worldConfig.with(androidTouchStickRenderingSystem)
 
         game.worldConfig(worldConfig)

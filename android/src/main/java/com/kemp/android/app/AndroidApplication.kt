@@ -36,6 +36,7 @@ class AndroidApplication(
     AttachStateListener {
     override var ready: () -> Unit = {}
     override var update: (frameTimeNanos: Long) -> Unit = {}
+    override var destroy: () -> Unit = {}
 
     var ecsCameraEntity: Entity = -1
 
@@ -205,6 +206,7 @@ class AndroidApplication(
     private fun destroyFilament() {
         if (!destroyed) {
             destroyed = true
+            destroy()
             uiHelper.detach()
 
             assetLoader.destroy()

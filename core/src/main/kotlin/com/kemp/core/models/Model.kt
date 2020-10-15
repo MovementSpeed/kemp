@@ -2,9 +2,10 @@ package com.kemp.core.models
 
 import com.kemp.core.Entity
 import com.kemp.core.SceneEntity
+import com.kemp.core.interfaces.Disposable
 import com.kemp.core.utils.Box
 
-interface Model {
+interface Model : Disposable {
     fun entity(): Entity
     fun root(): SceneEntity
     fun lights(): List<SceneEntity>

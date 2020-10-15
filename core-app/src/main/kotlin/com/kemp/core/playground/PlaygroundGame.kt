@@ -6,19 +6,14 @@ import com.kemp.core.app.Game
 import com.kemp.core.component
 import com.kemp.core.config.AntiAliasing
 import com.kemp.core.ecs.components.TransformComponent
-import com.kemp.core.input.Keys
-import com.kemp.core.input.touch.TouchStick
-import com.kemp.core.models.Model
+import com.kemp.core.mapper
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
-import com.kemp.core.utils.length
 import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
-    private var model: Model? = null
-
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
-        worldConfigurationBuilder.with(RotateObjectsSystem())
+        worldConfigurationBuilder.with(RotatePlayerSystem())
     }
 
     override fun ready(scene: Scene) {
@@ -33,13 +28,16 @@ class PlaygroundGame : Game {
             .rotate(Float3(0f, 45f, 0f))
 
         Kemp.coroutineScope.launch {
-            model = Kemp.assets.loadModel("models", "test_2.glb")
-            model?.apply {
+            val model1 = Kemp.assets.loadModel("models", "test.glb")
+            model1?.apply {
                 scene.addEntities(entities())
 
                 val entity = entity()
                 val entityTransform = entity.component<TransformComponent>()
-                entityTransform.transform.scale(Float3(4f, 4f, 4f))
+                entityTransform.transform.position(Float3(100f, 0f, 0f))
+
+                val playerMapper = mapper<PlayerComponent>()
+                playerMapper.create(entity)
 
                 val screenWidth = Kemp.graphicsConfig.width
                 val screenHeight = Kemp.graphicsConfig.height
@@ -53,14 +51,20 @@ class PlaygroundGame : Game {
                     radius)
             }
 
+            val model2 = Kemp.assets.loadModel("models", "test_2.glb")
+            model2?.apply {
+                scene.addEntities(entities())
+
+                val entity = entity()
+                val entityTransform = entity.component<TransformComponent>()
+                entityTransform.transform.scale(Float3(4f, 4f, 4f))
+            }
+
             val ibl = Kemp.assets.loadIndirectLight("lighting", "environment_ibl.ktx")
             scene.imageBasedLighting(ibl)
 
             val env = Kemp.assets.loadSkybox("lighting", "environment_skybox.ktx")
             scene.environment(env)
-
-            val sound = Kemp.assets.loadSound("sounds", "sound.ogg")
-            sound?.loop()
         }
     }
 

@@ -6,13 +6,13 @@ import android.graphics.Paint
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.systems.IteratingSystem
-import com.kemp.android.ui.RenderDelegate
+import com.kemp.android.ui.AndroidRenderDelegate
 import com.kemp.core.Entity
 import com.kemp.core.ecs.components.TouchSticksComponent
 import com.kemp.core.input.touch.TouchStick
 
 @All(TouchSticksComponent::class)
-class AndroidTouchStickRenderingSystem : IteratingSystem(), RenderDelegate {
+class AndroidTouchStickRenderingSystem : IteratingSystem(), AndroidRenderDelegate {
     private lateinit var touchSticksMapper: ComponentMapper<TouchSticksComponent>
     private val unprocessedTouchSticks = mutableMapOf<Entity, List<TouchStick>>()
 

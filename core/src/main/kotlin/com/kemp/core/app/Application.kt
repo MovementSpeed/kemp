@@ -11,5 +11,6 @@ import com.kemp.core.config.GraphicsConfig
 interface Application {
     var ready: () -> Unit
     var update: (frameTimeNanos: Long) -> Unit
+    var destroy: () -> Unit
     fun graphicsConfigChanged(graphicsConfig: GraphicsConfig)
 }
