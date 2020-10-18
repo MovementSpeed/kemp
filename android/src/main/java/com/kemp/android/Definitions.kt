@@ -5,6 +5,7 @@ import android.view.SurfaceView
 import androidx.lifecycle.Lifecycle
 import com.google.android.filament.*
 import com.kemp.android.app.AndroidApplication
+import com.kemp.android.ecs.systems.AndroidTouchButtonRenderingSystem
 import com.kemp.android.ecs.systems.AndroidTouchStickRenderingSystem
 import com.kemp.android.input.AndroidKeyboardInput
 import com.kemp.android.input.AndroidTouchInput
@@ -12,6 +13,7 @@ import com.kemp.android.io.AndroidAssets
 import com.kemp.android.scene.AndroidScene
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
+import com.kemp.core.ecs.systems.TouchButtonSystem
 import com.kemp.core.ecs.systems.TouchStickSystem
 import java.io.File
 
@@ -31,10 +33,16 @@ val fileSeparator = File.separatorChar
 fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceView {
     val androidApplication = AndroidApplication(context) { app, worldConfig ->
         worldConfig.with(TouchStickSystem())
+        worldConfig.with(TouchButtonSystem())
 
         val androidTouchStickRenderingSystem = AndroidTouchStickRenderingSystem()
+        val androidTouchButtonRenderingSystem = AndroidTouchButtonRenderingSystem()
+
         app.view.addRenderDelegate(androidTouchStickRenderingSystem)
+        app.view.addRenderDelegate(androidTouchButtonRenderingSystem)
+
         worldConfig.with(androidTouchStickRenderingSystem)
+        worldConfig.with(androidTouchButtonRenderingSystem)
 
         game.worldConfig(worldConfig)
     }

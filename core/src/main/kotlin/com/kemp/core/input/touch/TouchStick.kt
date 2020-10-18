@@ -2,17 +2,12 @@ package com.kemp.core.input.touch
 
 import com.kemp.core.normalize
 import com.kemp.core.utils.*
-import kotlin.math.sign
 
-class TouchStick(val x: Float, val y: Float, val radiusPx: Float) {
-    var enabled = true
+class TouchStick(val x: Float, val y: Float, val radiusPx: Float) : TouchElement() {
     var relativeStickPosition = Float2()
     val stickVector = Float2()
 
-    private var pressed = false
-    private var state = STICK_TOUCH_FAILED
-
-    fun touchAt(pressed: Boolean, x: Float, y: Float) {
+    override fun touchInside(x: Float, y: Float): Boolean {
         val distanceX = this.x - x
         val distanceY = this.y - y
 
@@ -20,23 +15,16 @@ class TouchStick(val x: Float, val y: Float, val radiusPx: Float) {
         f2.x = distanceX
         f2.y = distanceY
 
-        val touchInside = length(f2) <= radiusPx
+        return length(f2) <= radiusPx
+    }
 
-        val previousPressed = this.pressed
-        this.pressed = pressed
+    override fun touchAt(pressed: Boolean, x: Float, y: Float) {
+        super.touchAt(pressed, x, y)
 
-        if (!previousPressed && this.pressed && touchInside) {
-            state = STICK_TOUCH_STARTED
-        } else if (!previousPressed && this.pressed && !touchInside) {
-            state = STICK_TOUCH_FAILED
-            return
-        } else if (previousPressed && this.pressed && state == 0) {
-            state = STICK_TOUCH_UPDATING
-        } else if (previousPressed && !this.pressed && state == 2) {
-            state = STICK_TOUCH_ENDED
-        }
+        val distanceX = this.x - x
+        val distanceY = this.y - y
 
-        if (state == 1 || state == 3) {
+        if (state == TOUCH_FAILED || state == TOUCH_ENDED) {
             relativeStickPosition.x = 0f
             relativeStickPosition.y = 0f
             stickVector.x = 0f
@@ -54,12 +42,5 @@ class TouchStick(val x: Float, val y: Float, val radiusPx: Float) {
             stickVector.x = relativeStickPosition.x / radiusPx
             stickVector.y = relativeStickPosition.y / radiusPx
         }
-    }
-
-    private companion object {
-        const val STICK_TOUCH_STARTED = 0
-        const val STICK_TOUCH_FAILED = 1
-        const val STICK_TOUCH_UPDATING = 2
-        const val STICK_TOUCH_ENDED = 3
     }
 }

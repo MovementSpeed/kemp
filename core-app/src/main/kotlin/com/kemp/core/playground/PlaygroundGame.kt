@@ -49,6 +49,8 @@ class PlaygroundGame : Game {
                     screenWidth / 2f,
                     screenHeight.toFloat() - radius - 64f,
                     radius)
+
+                Kemp.ui.createTouchButton(entity, "action", 16f, 16f, 100f, 75f)
             }
 
             val model2 = Kemp.assets.loadModel("models", "test_2.glb")
@@ -58,6 +60,19 @@ class PlaygroundGame : Game {
                 val entity = entity()
                 val entityTransform = entity.component<TransformComponent>()
                 entityTransform.transform.scale(Float3(4f, 4f, 4f))
+
+                val playerMapper = mapper<PlayerComponent>()
+                playerMapper.create(entity)
+
+                val screenWidth = Kemp.graphicsConfig.width
+                val radius = 150f
+
+                Kemp.ui.createTouchStick(
+                    entity,
+                    "rotation",
+                    screenWidth / 2f,
+                    radius + 64f,
+                    radius)
             }
 
             val ibl = Kemp.assets.loadIndirectLight("lighting", "environment_ibl.ktx")

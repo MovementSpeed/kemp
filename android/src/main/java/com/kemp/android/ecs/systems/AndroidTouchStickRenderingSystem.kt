@@ -39,6 +39,12 @@ class AndroidTouchStickRenderingSystem : IteratingSystem(), AndroidRenderDelegat
     override fun draw(canvas: Canvas): Boolean {
         for (touchSticks in unprocessedTouchSticks.values) {
             for (touchStick in touchSticks) {
+                if (touchStick.active) {
+                    touchStickPaint.color = Color.DKGRAY
+                } else {
+                    touchStickPaint.color = Color.WHITE
+                }
+
                 canvas.drawCircle(touchStick.x, touchStick.y, touchStick.radiusPx, touchStickRangePaint)
                 canvas.drawCircle(
                     touchStick.x - touchStick.relativeStickPosition.x,
