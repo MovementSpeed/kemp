@@ -1,6 +1,10 @@
 package com.kemp.core.input.touch
 
+import com.kemp.core.rendering.ui.Renderer2D
+import com.kemp.core.rendering.ui.TouchElementRenderer
+
 abstract class TouchElement {
+    var touchElementRenderer: TouchElementRenderer? = null
     var enabled: Boolean = true
     var active: Boolean = false
 

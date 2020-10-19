@@ -12,17 +12,15 @@ class KempView : SurfaceView {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
+    init {
         setWillNotDraw(false)
     }
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.let { canv ->
-            var invalidate = false
-            renderDelegates.forEach { if (it.draw(canv)) invalidate = true }
-            if (invalidate) invalidate()
+            renderDelegates.forEach { it.draw(canv) }
+            invalidate()
         }
     }
 

@@ -3,7 +3,6 @@ package com.kemp.android.app
 import android.content.Context
 import android.view.Choreographer
 import android.view.Surface
-import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -24,7 +23,7 @@ import com.kemp.android.ui.KempView
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.app.Application
-import com.kemp.core.config.GraphicsConfig
+import com.kemp.core.config.rendering.GraphicsConfig
 import com.kemp.core.ecs.components.CameraNodeComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.TransformComponent

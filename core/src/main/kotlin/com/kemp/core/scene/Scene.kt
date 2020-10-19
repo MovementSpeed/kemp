@@ -2,8 +2,8 @@ package com.kemp.core.scene
 
 import com.kemp.core.Entity
 import com.kemp.core.SceneEntity
-import com.kemp.core.rendering.Environment
-import com.kemp.core.rendering.ImageBasedLighting
+import com.kemp.core.rendering.effects.Environment
+import com.kemp.core.rendering.effects.ImageBasedLighting
 
 interface Scene {
     fun mainCamera(): Entity

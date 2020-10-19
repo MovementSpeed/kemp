@@ -1,11 +1,11 @@
 package com.kemp.android.scene
 
 import com.kemp.android.FilamentScene
-import com.kemp.android.rendering.AndroidEnvironment
-import com.kemp.android.rendering.AndroidImageBasedLighting
+import com.kemp.android.rendering.effects.AndroidEnvironment
+import com.kemp.android.rendering.effects.AndroidImageBasedLighting
 import com.kemp.core.Entity
-import com.kemp.core.rendering.Environment
-import com.kemp.core.rendering.ImageBasedLighting
+import com.kemp.core.rendering.effects.Environment
+import com.kemp.core.rendering.effects.ImageBasedLighting
 import com.kemp.core.scene.Scene
 
 class AndroidScene(private val scene: FilamentScene, private val mainCamera: Entity): Scene {

@@ -6,6 +6,9 @@ typealias Seconds = Float
 typealias Entity = Int
 typealias SceneEntity = Int
 typealias Name = String
+typealias ContextName = String
+typealias InputName = String
+typealias InputTarget = String
 
 typealias Texture = Any
 typealias TextureSampler = Any

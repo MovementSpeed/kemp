@@ -1,6 +1,7 @@
 package com.kemp.core.input.touch
 
 import com.kemp.core.normalize
+import com.kemp.core.rendering.ui.Renderer2D
 import com.kemp.core.utils.*
 
 class TouchStick(val x: Float, val y: Float, val radiusPx: Float) : TouchElement() {

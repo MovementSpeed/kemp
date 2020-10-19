@@ -1,6 +1,6 @@
 package com.kemp.core.app
 
-import com.kemp.core.config.GraphicsConfig
+import com.kemp.core.config.rendering.GraphicsConfig
 
 /**
  * Platforms should implement their own application mechanism,

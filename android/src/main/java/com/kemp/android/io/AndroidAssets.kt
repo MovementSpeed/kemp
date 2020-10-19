@@ -12,22 +12,23 @@ import com.kemp.android.audio.AndroidMusic
 import com.kemp.android.audio.AndroidSound
 import com.kemp.android.fileSeparator
 import com.kemp.android.maxAudioStreams
-import com.kemp.android.models.AndroidModel
-import com.kemp.android.rendering.AndroidEnvironment
-import com.kemp.android.rendering.AndroidImageBasedLighting
+import com.kemp.android.rendering.models.AndroidModel
+import com.kemp.android.rendering.effects.AndroidEnvironment
+import com.kemp.android.rendering.effects.AndroidImageBasedLighting
 import com.kemp.android.suspendLoad
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.audio.Music
 import com.kemp.core.audio.Sound
+import com.kemp.core.config.input.InputConfiguration
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.interfaces.Disposable
 import com.kemp.core.io.Assets
-import com.kemp.core.models.Model
-import com.kemp.core.rendering.Environment
-import com.kemp.core.rendering.ImageBasedLighting
+import com.kemp.core.rendering.models.Model
+import com.kemp.core.rendering.effects.Environment
+import com.kemp.core.rendering.effects.ImageBasedLighting
 import com.kemp.core.utils.Mat4
 import com.kemp.core.utils.transposeFast
 import kotlinx.coroutines.Dispatchers
@@ -150,6 +151,10 @@ class AndroidAssets(
             disposables.add(music)
             return@withContext music
         }
+
+    override suspend fun loadInputConfiguration(path: String, fileName: String): InputConfiguration {
+        return InputConfiguration()
+    }
 
     override fun dispose() {
         disposables.forEach { it.dispose() }

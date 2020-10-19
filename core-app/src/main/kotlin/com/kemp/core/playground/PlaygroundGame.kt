@@ -4,9 +4,11 @@ import com.artemis.WorldConfigurationBuilder
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
 import com.kemp.core.component
-import com.kemp.core.config.AntiAliasing
+import com.kemp.core.config.rendering.AntiAliasing
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.mapper
+import com.kemp.core.rendering.ui.DefaultTouchButtonRenderer
+import com.kemp.core.rendering.ui.DefaultTouchStickRenderer
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
 import kotlinx.coroutines.launch
@@ -48,9 +50,10 @@ class PlaygroundGame : Game {
                     "rotation",
                     screenWidth / 2f,
                     screenHeight.toFloat() - radius - 64f,
-                    radius)
+                    radius, DefaultTouchStickRenderer()
+                )
 
-                Kemp.ui.createTouchButton(entity, "action", 16f, 16f, 100f, 75f)
+                Kemp.ui.createTouchButton(entity, "action", 16f, 16f, 100f, 75f, DefaultTouchButtonRenderer())
             }
 
             val model2 = Kemp.assets.loadModel("models", "test_2.glb")
@@ -72,7 +75,8 @@ class PlaygroundGame : Game {
                     "rotation",
                     screenWidth / 2f,
                     radius + 64f,
-                    radius)
+                    radius, DefaultTouchStickRenderer()
+                )
             }
 
             val ibl = Kemp.assets.loadIndirectLight("lighting", "environment_ibl.ktx")

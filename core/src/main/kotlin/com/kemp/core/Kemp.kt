@@ -3,7 +3,7 @@ package com.kemp.core
 import com.artemis.World
 import com.kemp.core.app.Application
 import com.kemp.core.app.Game
-import com.kemp.core.config.GraphicsConfig
+import com.kemp.core.config.rendering.GraphicsConfig
 import com.kemp.core.input.methods.KeyboardInput
 import com.kemp.core.input.methods.TouchInput
 import com.kemp.core.io.Assets

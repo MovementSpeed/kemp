@@ -1,0 +1,10 @@
+{
+  "context_1": {
+    "turn": {
+      "type": "vectorial",
+      "gamepad": ["right_stick"],
+      "touch": ["rotation_stick"],
+      "keyboard": ["left", "right", "a", "d"]
+    }
+  }
+}

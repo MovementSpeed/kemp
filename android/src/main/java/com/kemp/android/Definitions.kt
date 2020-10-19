@@ -5,16 +5,15 @@ import android.view.SurfaceView
 import androidx.lifecycle.Lifecycle
 import com.google.android.filament.*
 import com.kemp.android.app.AndroidApplication
-import com.kemp.android.ecs.systems.AndroidTouchButtonRenderingSystem
-import com.kemp.android.ecs.systems.AndroidTouchStickRenderingSystem
+import com.kemp.android.ecs.systems.AndroidTouchUiRenderingSystem
 import com.kemp.android.input.AndroidKeyboardInput
 import com.kemp.android.input.AndroidTouchInput
 import com.kemp.android.io.AndroidAssets
+import com.kemp.android.rendering.ui.AndroidRenderer2D
 import com.kemp.android.scene.AndroidScene
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
-import com.kemp.core.ecs.systems.TouchButtonSystem
-import com.kemp.core.ecs.systems.TouchStickSystem
+import com.kemp.core.ecs.systems.TouchElementsSystem
 import java.io.File
 
 typealias AttachStateListener = android.view.View.OnAttachStateChangeListener
@@ -32,17 +31,8 @@ val fileSeparator = File.separatorChar
 
 fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceView {
     val androidApplication = AndroidApplication(context) { app, worldConfig ->
-        worldConfig.with(TouchStickSystem())
-        worldConfig.with(TouchButtonSystem())
-
-        val androidTouchStickRenderingSystem = AndroidTouchStickRenderingSystem()
-        val androidTouchButtonRenderingSystem = AndroidTouchButtonRenderingSystem()
-
-        app.view.addRenderDelegate(androidTouchStickRenderingSystem)
-        app.view.addRenderDelegate(androidTouchButtonRenderingSystem)
-
-        worldConfig.with(androidTouchStickRenderingSystem)
-        worldConfig.with(androidTouchButtonRenderingSystem)
+        worldConfig.with(TouchElementsSystem())
+        worldConfig.with(AndroidTouchUiRenderingSystem())
 
         game.worldConfig(worldConfig)
     }
@@ -60,7 +50,11 @@ fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceVi
 
     lifecycle.addObserver(androidApplication)
 
+    val renderer2D = AndroidRenderer2D()
+    androidApplication.view.addRenderDelegate(renderer2D)
+
     Kemp.application = androidApplication
+    Kemp.ui.renderer2D = renderer2D
     Kemp.touchInput = touchInput
     Kemp.keyboardInput = keyboardInput
     Kemp.assets = androidAssets
