@@ -10,7 +10,7 @@ import com.kemp.core.input.touch.TouchStick
 import com.kemp.core.utils.Pool
 
 @All(TransformComponent::class, NodeComponent::class, TouchElementsComponent::class, PlayerComponent::class)
-class RotatePlayerSystem : IteratingSystem() {
+class PlayerControllerSystem : IteratingSystem() {
     private lateinit var transformMapper: ComponentMapper<TransformComponent>
     private lateinit var nodeMapper: ComponentMapper<NodeComponent>
     private lateinit var touchElementsMapper: ComponentMapper<TouchElementsComponent>
@@ -25,11 +25,11 @@ class RotatePlayerSystem : IteratingSystem() {
         val touchStick = touchSticksComponent.touchElements["rotation"] as? TouchStick?
 
         if (touchStick != null) {
-            float3.x = 0f
-            float3.y = touchStick.stickVector.x
-            float3.z = 0f
+            float3.x = touchStick.stickVector.x / 10f
+            float3.y = 0f
+            float3.z = touchStick.stickVector.y / 10f
 
-            transform.rotate(float3)
+            transform.translate(float3)
         }
     }
 }
