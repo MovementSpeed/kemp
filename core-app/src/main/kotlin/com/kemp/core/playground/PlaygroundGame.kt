@@ -60,7 +60,9 @@ class PlaygroundGame : Game {
                 val entity = entity()
 
                 val entityTransform = entity.component<TransformComponent>()
-                entityTransform.transform.position(Float3(0f, 0f, 0f))
+                entityTransform.transform
+                    .position(Position(0f, 0f, 0f))
+                    .rotate(Rotation(0f, 90f, 0f))
 
                 val playerMapper = mapper<PlayerComponent>()
                 playerMapper.create(entity)

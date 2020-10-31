@@ -48,17 +48,17 @@ class Transform {
     }
 
     fun position(v: Position): Transform {
-        return translate(-matrix.position)
-            .translate(v)
+        matrix = translation(v)
+        return this
     }
 
     fun rotation(v: Rotation): Transform {
-        return rotate(-matrix.rotation)
-            .rotate(v)
+        matrix = com.kemp.core.utils.rotation(v)
+        return this
     }
 
     fun scaling(v: Scale): Transform {
-        return scale(-matrix.scale)
-            .scale(v)
+        matrix = com.kemp.core.utils.scale(v)
+        return this
     }
 }
