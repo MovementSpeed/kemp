@@ -6,19 +6,19 @@ import com.artemis.annotations.One
 import com.artemis.systems.IteratingSystem
 import com.google.android.filament.Engine
 import com.google.android.filament.TransformManager
-import com.kemp.core.ecs.components.CameraNodeComponent
+import com.kemp.core.ecs.components.CameraComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
-import com.kemp.core.utils.Float3
 import com.kemp.core.utils.Pool
 
 @All(TransformComponent::class, EntityAssociationComponent::class)
-@One(NodeComponent::class, CameraNodeComponent::class)
-class AndroidTransformSystem(private val engine: Engine, private val transformManager: TransformManager) : IteratingSystem() {
+@One(NodeComponent::class, CameraComponent::class)
+class AndroidTransformSystem(private val engine: Engine, private val transformManager: TransformManager) :
+    IteratingSystem() {
     private lateinit var transformMapper: ComponentMapper<TransformComponent>
     private lateinit var nodeMapper: ComponentMapper<NodeComponent>
-    private lateinit var cameraNodeMapper: ComponentMapper<CameraNodeComponent>
+    private lateinit var cameraMapper: ComponentMapper<CameraComponent>
     private lateinit var entityAssociationMapper: ComponentMapper<EntityAssociationComponent>
     private var float3 = Pool.useFloat3()
 
@@ -27,23 +27,24 @@ class AndroidTransformSystem(private val engine: Engine, private val transformMa
         val transform = transformComponent.transform
         transform.update()
 
-        val nodeComponent = if (nodeMapper.has(entityId)) {
-            nodeMapper.get(entityId)
-        } else {
-            cameraNodeMapper.get(entityId)
-        }
+        val component =
+            if (nodeMapper.has(entityId)) {
+                nodeMapper.get(entityId)
+            } else {
+                cameraMapper.get(entityId)
+            }
 
         val entityAssociationComponent = entityAssociationMapper.get(entityId)
         val filamentEntity = entityAssociationComponent.implementationEntity
 
-        if (nodeComponent is NodeComponent) {
+        if (component is NodeComponent) {
             // It's a Filament renderable
             filamentEntity?.let {
                 val i = transformManager.getInstance(filamentEntity)
                 val transformArray = transform.array
                 transformManager.setTransform(i, transformArray)
             }
-        } else if (nodeComponent is CameraNodeComponent) {
+        } else if (component is CameraComponent) {
             // It's a Filament camera
             filamentEntity?.let {
                 val position = transform.position

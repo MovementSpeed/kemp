@@ -24,9 +24,10 @@ import com.kemp.core.Entity
 import com.kemp.core.Kemp
 import com.kemp.core.app.Application
 import com.kemp.core.config.rendering.GraphicsConfig
-import com.kemp.core.ecs.components.CameraNodeComponent
+import com.kemp.core.ecs.components.CameraComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.TransformComponent
+import com.kemp.core.mapper
 
 class AndroidApplication(
     private val context: Context,
@@ -48,7 +49,7 @@ class AndroidApplication(
     // Ecs
     private lateinit var entityAssociationMapper: ComponentMapper<EntityAssociationComponent>
     private lateinit var transformMapper: ComponentMapper<TransformComponent>
-    private lateinit var cameraNodeMapper: ComponentMapper<CameraNodeComponent>
+    private lateinit var cameraMapper: ComponentMapper<CameraComponent>
 
     // Android rendering framework
     private lateinit var choreographer: Choreographer
@@ -152,9 +153,9 @@ class AndroidApplication(
         ecsConfig(this, worldConfBuilder)
 
         Kemp.world = World(worldConfBuilder.build())
-        entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
-        transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
-        cameraNodeMapper = Kemp.world.getMapper(CameraNodeComponent::class.java)
+        entityAssociationMapper = mapper()
+        transformMapper = mapper()
+        cameraMapper = mapper()
     }
 
     // Filament
@@ -230,7 +231,7 @@ class AndroidApplication(
         val entityAssociation = entityAssociationMapper.create(ecsCameraEntity)
         entityAssociation.implementationEntity = cameraEntity
         transformMapper.create(ecsCameraEntity)
-        cameraNodeMapper.create(ecsCameraEntity)
+        cameraMapper.create(ecsCameraEntity)
 
         camera.setExposure(16f, 1f / 125f, 100f)
 

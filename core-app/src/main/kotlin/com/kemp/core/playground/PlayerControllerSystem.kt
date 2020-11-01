@@ -19,10 +19,7 @@ class PlayerControllerSystem : IteratingSystem() {
     private lateinit var touchElementsMapper: ComponentMapper<TouchElementsComponent>
 
     private var movement = Float3()
-    private var direction = Float3()
-
     private var currentAngle = 0f
-    private val speed = 1f
 
     override fun process(entityId: Int) {
         val transformComponent = transformMapper.get(entityId)

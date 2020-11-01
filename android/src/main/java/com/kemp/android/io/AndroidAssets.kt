@@ -26,6 +26,7 @@ import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.interfaces.Disposable
 import com.kemp.core.io.Assets
+import com.kemp.core.mapper
 import com.kemp.core.rendering.models.Model
 import com.kemp.core.rendering.effects.Environment
 import com.kemp.core.rendering.effects.ImageBasedLighting
@@ -42,9 +43,9 @@ class AndroidAssets(
     private val assetLoader: AssetLoader,
     private val resourceLoader: ResourceLoader
 ) : Assets {
-    private val entityAssociationMapper = Kemp.world.getMapper(EntityAssociationComponent::class.java)
-    private val transformMapper = Kemp.world.getMapper(TransformComponent::class.java)
-    private val nodeMapper = Kemp.world.getMapper(NodeComponent::class.java)
+    private val entityAssociationMapper = mapper<EntityAssociationComponent>()
+    private val transformMapper = mapper<TransformComponent>()
+    private val nodeMapper = mapper<NodeComponent>()
 
     private val disposables = mutableListOf<Disposable>()
 
