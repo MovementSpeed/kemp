@@ -15,7 +15,6 @@ import kotlin.math.*
 @All(TransformComponent::class, NodeComponent::class, TouchElementsComponent::class, PlayerComponent::class)
 class PlayerControllerSystem : IteratingSystem() {
     private lateinit var transformMapper: ComponentMapper<TransformComponent>
-    private lateinit var nodeMapper: ComponentMapper<NodeComponent>
     private lateinit var touchElementsMapper: ComponentMapper<TouchElementsComponent>
 
     private var movement = Float3()
@@ -33,7 +32,8 @@ class PlayerControllerSystem : IteratingSystem() {
             this.movement.y = 0f
             this.movement.z = touchStick.stickVector.y / 10f
 
-            val movementSpeed = length(movement) / 5f
+            val movementSpeed = length(movement)
+
             if (movementSpeed > 0f) {
                 val dir = degrees(atan2(movement.z, movement.x)) + 180f
 

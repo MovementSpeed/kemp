@@ -11,8 +11,12 @@ import com.kemp.core.utils.Float3
 import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
+    private val cameraControllerSystem = CameraControllerSystem()
+
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
-        worldConfigurationBuilder.with(PlayerControllerSystem())
+        worldConfigurationBuilder
+            .with(PlayerControllerSystem())
+            .with(cameraControllerSystem)
     }
 
     override fun ready(scene: Scene) {
@@ -32,7 +36,9 @@ class PlaygroundGame : Game {
 
         Kemp.graphicsConfig.configChanged()
 
-        val camera = scene.mainCamera()
+        val camera = Kemp.world.create()
+        scene.createCamera(camera)
+
         val cameraTransform = camera.component<TransformComponent>()
 
         cameraTransform.transform
@@ -57,25 +63,28 @@ class PlaygroundGame : Game {
             bob?.apply {
                 scene.addEntities(entities())
 
-                val entity = entity()
+                val bobEntity = entity()
 
-                val entityTransform = entity.component<TransformComponent>()
+                val entityTransform = bobEntity.component<TransformComponent>()
                 entityTransform.transform
                     .position(Position(0f, 0f, 0f))
                     .rotate(Rotation(0f, 90f, 0f))
 
                 val playerMapper = mapper<PlayerComponent>()
-                playerMapper.create(entity)
+                playerMapper.create(bobEntity)
 
                 val screenWidth = graphics.width
+                val screenHeight = graphics.height
                 val radius = 150f
 
                 Kemp.ui.createTouchStick(
-                    entity,
+                    bobEntity,
                     "rotation",
                     screenWidth / 2f,
-                    radius + 64f,
+                    screenHeight - radius - 64f,
                     radius, DefaultTouchStickRenderer())
+
+                cameraControllerSystem.target = bobEntity
             }
 
             val ibl = assets.loadIndirectLight("lighting", "environment_ibl.ktx")

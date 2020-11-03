@@ -32,6 +32,7 @@ object Kemp {
 
         application.destroy = {
             assets.dispose()
+            scene.dispose()
         }
 
         application.ready = {

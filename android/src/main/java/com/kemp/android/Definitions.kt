@@ -26,6 +26,7 @@ typealias FilamentRgbType = Colors.RgbType
 typealias FilamentRgbaType = Colors.RgbaType
 typealias FilamentCullingMode = Material.CullingMode
 typealias FilamentScene = Scene
+typealias FilamentView = View
 
 val fileSeparator = File.separatorChar
 
@@ -46,7 +47,7 @@ fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceVi
         androidApplication.assetLoader,
         androidApplication.resourceLoader)
 
-    val androidScene = AndroidScene(androidApplication.scene, androidApplication.ecsCameraEntity)
+    val androidScene = AndroidScene(androidApplication.engine, androidApplication.scene, androidApplication.filamentView)
 
     lifecycle.addObserver(androidApplication)
 

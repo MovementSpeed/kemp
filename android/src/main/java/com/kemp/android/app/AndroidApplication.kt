@@ -38,10 +38,9 @@ class AndroidApplication(
     override var update: (frameTimeNanos: Long) -> Unit = {}
     override var destroy: () -> Unit = {}
 
-    var ecsCameraEntity: Entity = -1
-
     lateinit var engine: Engine
     lateinit var view: KempView
+    lateinit var filamentView: View
     lateinit var assetLoader: AssetLoader
     lateinit var resourceLoader: ResourceLoader
     lateinit var scene: Scene
@@ -65,8 +64,6 @@ class AndroidApplication(
     private var destroyed = false
 
     private lateinit var renderer: Renderer
-    private lateinit var filamentView: View
-    private lateinit var camera: Camera
 
     init {
         Utils.init()
@@ -98,13 +95,10 @@ class AndroidApplication(
         Kemp.graphicsConfig.height = height
 
         filamentView.viewport = Viewport(0, 0, width, height)
-
-        val aspect = width.toDouble() / height.toDouble()
-        camera.setProjection(45.0, aspect, 0.01, 1000.0, Camera.Fov.VERTICAL)
     }
 
     override fun onViewAttachedToWindow(v: android.view.View?) {
-        // Nothing
+        /* no-op */
     }
 
     override fun onViewDetachedFromWindow(v: android.view.View?) {
@@ -215,27 +209,13 @@ class AndroidApplication(
             engine.destroyRenderer(renderer)
             engine.destroyView(filamentView)
             engine.destroyScene(scene)
-            engine.destroyCamera(camera)
 
             engine.destroy()
         }
     }
 
     private fun setupCamera() {
-        val em = EntityManager.get()
-        val cameraEntity = em.create()
-        camera = engine.createCamera(cameraEntity)
-        filamentView.camera = camera
-
-        ecsCameraEntity = Kemp.world.create()
-        val entityAssociation = entityAssociationMapper.create(ecsCameraEntity)
-        entityAssociation.implementationEntity = cameraEntity
-        transformMapper.create(ecsCameraEntity)
-        cameraMapper.create(ecsCameraEntity)
-
-        camera.setExposure(16f, 1f / 125f, 100f)
-
-        val mat = rotation(Float3(0f, 1f, 0f), 180f) * translation(Float3(0f, 0f, 0f))
+        /*val mat = rotation(Float3(0f, 1f, 0f), 180f) * translation(Float3(0f, 0f, 0f))
         val position = mat.position
         val forward = mat.forward
         val up = mat.up
@@ -252,7 +232,7 @@ class AndroidApplication(
             up.x.toDouble(),
             up.y.toDouble(),
             up.z.toDouble()
-        )
+        )*/
     }
 
     override fun graphicsConfigChanged(graphicsConfig: GraphicsConfig) {
