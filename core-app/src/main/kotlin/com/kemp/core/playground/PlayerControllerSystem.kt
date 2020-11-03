@@ -24,7 +24,7 @@ class PlayerControllerSystem : IteratingSystem() {
         val transformComponent = transformMapper.get(entityId)
         val transform = transformComponent.transform
 
-        val touchSticksComponent = touchElementsMapper.get(entityId)
+        val touchSticksComponent = touchElementsMapper.get(entityId) ?: return
         val touchStick = touchSticksComponent.touchElements["rotation"] as? TouchStick?
 
         if (touchStick != null) {

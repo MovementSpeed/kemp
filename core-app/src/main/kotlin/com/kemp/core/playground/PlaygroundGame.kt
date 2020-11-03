@@ -29,10 +29,10 @@ class PlaygroundGame : Game {
 
         val ao = graphics.ambientOcclusionOptions
         ao.enabled = true
-        ao.resolution = 0.75f
-        ao.intensity = 3f
-        ao.power = 3f
-        ao.radius = 0.75f
+        //ao.resolution = 0.7f
+        //ao.intensity = 1.5f
+        ao.power = 1.5f
+        //ao.radius = 0.75f
 
         Kemp.graphicsConfig.configChanged()
 
@@ -88,6 +88,9 @@ class PlaygroundGame : Game {
             }
 
             val ibl = assets.loadIndirectLight("lighting", "environment_ibl.ktx")
+            ibl.intensity(70_000f)
+            ibl.rotate(Float3(0f, 0f, 0f))
+
             scene.imageBasedLighting(ibl)
 
             val env = assets.loadSkybox("lighting", "environment_skybox.ktx")

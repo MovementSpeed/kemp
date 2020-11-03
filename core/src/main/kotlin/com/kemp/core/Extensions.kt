@@ -3,6 +3,8 @@ package com.kemp.core
 import com.artemis.Component
 import com.artemis.ComponentMapper
 import com.kemp.core.utils.Float2
+import com.kemp.core.utils.Mat3
+import com.kemp.core.utils.Mat4
 import com.kemp.core.utils.length
 
 inline fun <reified T : Component> Entity.component(): T {
@@ -19,4 +21,8 @@ fun Float2.normalize(): Float2 {
     this.x = this.x * l
     this.y = this.y * l
     return this
+}
+
+fun Mat4.toMat3(): Mat3 {
+    return Mat3.of(*this.toFloatArray())
 }

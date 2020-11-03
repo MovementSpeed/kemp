@@ -11,7 +11,8 @@ class TouchElementsSystem : IteratingSystem() {
     private lateinit var touchElementsMapper: ComponentMapper<TouchElementsComponent>
 
     override fun process(entityId: Int) {
-        val touchElementsComponent = touchElementsMapper.get(entityId)
+        val touchElementsComponent = touchElementsMapper.get(entityId) ?: return
+
         val touchElements = touchElementsComponent.touchElements.values.filter { it.enabled }
 
         for (touchElement in touchElements) {

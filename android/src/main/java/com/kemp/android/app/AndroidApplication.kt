@@ -70,7 +70,6 @@ class AndroidApplication(
         initFilament()
         initView()
         initEcs()
-        setupCamera()
     }
 
     // UiHelper.RendererCallback
@@ -165,18 +164,24 @@ class AndroidApplication(
         assetLoader = AssetLoader(engine, MaterialProvider(engine), EntityManager.get())
         resourceLoader = ResourceLoader(engine, true, false)
 
-        val light = EntityManager.get().create()
+        /*val light = EntityManager.get().create()
 
-        val (r, g, b) = Colors.cct(6_500.0f)
-        LightManager.Builder(LightManager.Type.DIRECTIONAL)
+        val (r, g, b) = Colors.cct(6500.0f)
+        LightManager.Builder(LightManager.Type.POINT)
+            .color(r, g, b)
+            .falloff(20f)
+            .intensityCandela(100_000_000f)
+            .position(0f, 5f, 0f)
+            .build(engine, light)*/
+
+        /*LightManager.Builder(LightManager.Type.DIRECTIONAL)
             .color(r, g, b)
             .intensity(100_000.0f)
             .direction(-1.0f, -1.0f, 1.0f)
-
             .castShadows(true)
-            .build(engine, light)
+            .build(engine, light)*/
 
-        scene.addEntity(light)
+        //scene.addEntity(light)
     }
 
     private fun initView() {
@@ -212,27 +217,6 @@ class AndroidApplication(
 
             engine.destroy()
         }
-    }
-
-    private fun setupCamera() {
-        /*val mat = rotation(Float3(0f, 1f, 0f), 180f) * translation(Float3(0f, 0f, 0f))
-        val position = mat.position
-        val forward = mat.forward
-        val up = mat.up
-
-        camera.lookAt(
-            position.x.toDouble(),
-            position.y.toDouble(),
-            position.z.toDouble(),
-
-            forward.x.toDouble(),
-            forward.y.toDouble(),
-            forward.z.toDouble(),
-
-            up.x.toDouble(),
-            up.y.toDouble(),
-            up.z.toDouble()
-        )*/
     }
 
     override fun graphicsConfigChanged(graphicsConfig: GraphicsConfig) {
