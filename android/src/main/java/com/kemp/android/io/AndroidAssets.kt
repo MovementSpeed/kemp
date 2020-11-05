@@ -61,31 +61,29 @@ class AndroidAssets(
             build()
         }
 
-    override suspend fun loadModel(path: String, fileName: String): Model? =
+    override suspend fun loadModel(path: String, fileName: String): Model =
         withContext(Dispatchers.Default) {
             val buffer = bufferForFile(path, fileName)
-            val asset = assetLoader.createAssetFromBinary(buffer)
-            return@withContext asset?.let { ast ->
-                withContext(Dispatchers.Main) {
-                    resourceLoader.loadResources(ast)
-                }
+            val asset = assetLoader.createAssetFromBinary(buffer) ?: throw Exception("Couldn't load model $fileName at path $path")
 
-                ast.releaseSourceData()
+            withContext(Dispatchers.Main) { resourceLoader.loadResources(asset) }
+            asset.releaseSourceData()
 
-                val model = AndroidModel(assetLoader, ast)
-                val root = model.root()
-                val name = fileName.takeWhile { it != '.' }
-                val entity = setupModelEntity(model, true, name, root)
-                model.entity = entity
+            val name = fileName.takeWhile { it != '.' }
 
-                val entities = model.entities()
-                entities.forEach { implementationEntity ->
-                    setupModelEntity(model, false, name, implementationEntity)
-                }
+            val model = AndroidModel(assetLoader, asset)
+            val root = model.root()
 
-                disposables.add(model)
-                model
+            val entity = setupModelEntity(model, true, name, root)
+            model.entity = entity
+
+            val entities = model.entities()
+            entities.forEach { implementationEntity ->
+                setupModelEntity(model, false, name, implementationEntity)
             }
+
+            disposables.add(model)
+            model
         }
 
     override suspend fun loadIndirectLight(path: String, fileName: String): ImageBasedLighting =

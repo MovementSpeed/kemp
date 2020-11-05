@@ -9,7 +9,7 @@ import com.kemp.core.rendering.effects.Environment
 import com.kemp.core.rendering.effects.ImageBasedLighting
 
 interface Assets : Disposable {
-    suspend fun loadModel(path: String, fileName: String): Model?
+    suspend fun loadModel(path: String, fileName: String): Model
     suspend fun loadIndirectLight(path: String, fileName: String): ImageBasedLighting
     suspend fun loadSkybox(path: String, fileName: String): Environment
     suspend fun loadSound(path: String, fileName: String): Sound?

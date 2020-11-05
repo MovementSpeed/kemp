@@ -9,6 +9,7 @@ import com.kemp.android.rendering.effects.AndroidEnvironment
 import com.kemp.android.rendering.effects.AndroidImageBasedLighting
 import com.kemp.core.Entity
 import com.kemp.core.Kemp
+import com.kemp.core.SceneEntity
 import com.kemp.core.ecs.components.CameraComponent
 import com.kemp.core.ecs.components.EntityAssociationComponent
 import com.kemp.core.ecs.components.TransformComponent
@@ -47,20 +48,29 @@ class AndroidScene(private val engine: Engine, private val scene: FilamentScene,
         })
     }
 
-    override fun addEntity(entity: Entity) {
+    override fun addEntity(entity: SceneEntity) {
         scene.addEntity(entity)
     }
 
-    override fun addEntities(entities: List<Entity>) {
+    override fun addEntities(entities: List<SceneEntity>) {
         scene.addEntities(entities.toIntArray())
     }
 
-    override fun removeEntity(entity: Entity) {
+    override fun removeEntity(entity: SceneEntity) {
         scene.removeEntity(entity)
     }
 
-    override fun removeEntities(entities: List<Entity>) {
+    override fun removeEntities(entities: List<SceneEntity>) {
         scene.removeEntities(entities.toIntArray())
+    }
+
+    override fun reparent(entity: SceneEntity, to: SceneEntity) {
+        val tm = engine.transformManager
+
+        val e1 = tm.getInstance(entity)
+        val e2 = tm.getInstance(to)
+
+        tm.setParent(e1, e2)
     }
 
     override fun imageBasedLighting(ibl: ImageBasedLighting) {

@@ -35,10 +35,9 @@ class PlayerControllerSystem : IteratingSystem() {
             val movementSpeed = length(movement)
 
             if (movementSpeed > 0f) {
-                val dir = degrees(atan2(movement.z, movement.x)) + 180f
+                val dir = degrees(atan2(movement.z, movement.x)) + 90f
 
                 val angleDelta = angleDelta(dir, currentAngle)
-                println(angleDelta)
 
                 val angularSpeed = 0.1f * angleDelta
                 currentAngle += angularSpeed

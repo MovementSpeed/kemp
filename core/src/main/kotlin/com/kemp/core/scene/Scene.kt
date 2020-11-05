@@ -12,6 +12,7 @@ interface Scene : Disposable {
     fun addEntities(entities: List<SceneEntity>)
     fun removeEntity(entity: SceneEntity)
     fun removeEntities(entities: List<SceneEntity>)
+    fun reparent(entity: SceneEntity, to: SceneEntity)
     fun imageBasedLighting(ibl: ImageBasedLighting)
     fun environment(environment: Environment)
 }
