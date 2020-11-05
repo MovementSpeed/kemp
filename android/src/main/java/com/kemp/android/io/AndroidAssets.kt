@@ -67,7 +67,7 @@ class AndroidAssets(
             val asset = assetLoader.createAssetFromBinary(buffer) ?: throw Exception("Couldn't load model $fileName at path $path")
 
             withContext(Dispatchers.Main) { resourceLoader.loadResources(asset) }
-            asset.releaseSourceData()
+            //asset.animator
 
             val name = fileName.takeWhile { it != '.' }
 
@@ -82,6 +82,7 @@ class AndroidAssets(
                 setupModelEntity(model, false, name, implementationEntity)
             }
 
+            asset.releaseSourceData()
             disposables.add(model)
             model
         }

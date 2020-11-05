@@ -7,12 +7,14 @@ import com.kemp.core.config.rendering.AntiAliasing
 import com.kemp.core.config.rendering.GraphicsConfig
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.io.Assets
+import com.kemp.core.rendering.models.Model
 import com.kemp.core.rendering.ui.DefaultTouchStickRenderer
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
 import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
+    private var bobModel: Model? = null
     private val cameraControllerSystem = CameraControllerSystem()
 
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
@@ -53,7 +55,7 @@ class PlaygroundGame : Game {
 
             val ibl = assets.loadIndirectLight("lighting", "_ibl.ktx")
             ibl.intensity(70_000f)
-            ibl.rotate(Float3(0f, 90f, 0f))
+            ibl.rotate(Float3(0f, 0f, 0f))
 
             scene.imageBasedLighting(ibl)
 
@@ -62,7 +64,20 @@ class PlaygroundGame : Game {
         }
     }
 
+    private var anim = 0f
+
     override fun update(delta: Float) {
+        /*val bobAnimator = bobModel?.animator()
+        val durationSeconds = bobAnimator?.animationDuration(0)
+
+        durationSeconds?.let {
+            anim += 0.01f
+            if (anim > durationSeconds) {
+                anim = 0f
+            }
+
+            bobAnimator.animate(0, anim)
+        }*/
     }
 
     private suspend fun createPlane(assets: Assets, scene: Scene) {
@@ -78,13 +93,9 @@ class PlaygroundGame : Game {
 
     private suspend fun createBob(assets: Assets, scene: Scene, graphics: GraphicsConfig): SceneEntity {
         val bob = assets.loadModel("models", "bob.glb")
+
         scene.addEntities(bob.entities())
         val bobEntity = bob.entity()
-
-        val entityTransform = bobEntity.component<TransformComponent>()
-        entityTransform.transform
-            .position(Position(0f, 0f, 0f))
-            .rotate(Rotation(0f, 0f, 0f))
 
         val playerMapper = mapper<PlayerComponent>()
         playerMapper.create(bobEntity)
@@ -101,6 +112,7 @@ class PlaygroundGame : Game {
             radius, DefaultTouchStickRenderer())
 
         cameraControllerSystem.target = bobEntity
+        bobModel = bob
         return bob.root()
     }
 
