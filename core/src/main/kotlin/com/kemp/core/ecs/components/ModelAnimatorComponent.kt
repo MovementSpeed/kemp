@@ -8,4 +8,5 @@ class ModelAnimatorComponent : Component() {
     lateinit var modelAnimator: ModelAnimator
     var currentTime: Seconds = 0f
     var lastFrameTimestamp: Long = 0L
+    var playbackSpeed = 1f
 }

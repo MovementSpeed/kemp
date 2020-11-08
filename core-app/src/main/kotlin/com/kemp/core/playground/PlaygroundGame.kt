@@ -5,6 +5,7 @@ import com.kemp.core.*
 import com.kemp.core.app.Game
 import com.kemp.core.config.rendering.AntiAliasing
 import com.kemp.core.config.rendering.GraphicsConfig
+import com.kemp.core.ecs.components.ModelAnimatorComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.io.Assets
 import com.kemp.core.rendering.models.Model
@@ -14,7 +15,6 @@ import com.kemp.core.utils.Float3
 import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
-    private var bobModel: Model? = null
     private val cameraControllerSystem = CameraControllerSystem()
 
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
@@ -64,22 +64,7 @@ class PlaygroundGame : Game {
         }
     }
 
-    private var anim = 0f
-
     override fun update(delta: Float) {
-        /*val bobAnimator = bobModel?.animator()
-        val durationSeconds = bobAnimator?.animationDuration(0)
-
-        durationSeconds?.let {
-            anim += 0.05f
-
-            if (anim > durationSeconds) {
-                anim = 0f
-            }
-
-            bobAnimator.animate(0, anim)
-            bobAnimator.update()
-        }*/
     }
 
     private suspend fun createPlane(assets: Assets, scene: Scene) {
@@ -101,7 +86,6 @@ class PlaygroundGame : Game {
 
         val entityTransform = bobEntity.component<TransformComponent>()
         entityTransform.transform
-            //.scale(Scale(0.01f))
 
         val playerMapper = mapper<PlayerComponent>()
         playerMapper.create(bobEntity)
@@ -118,7 +102,6 @@ class PlaygroundGame : Game {
             radius, DefaultTouchStickRenderer())
 
         cameraControllerSystem.target = bobEntity
-        bobModel = bob
         return bob.root()
     }
 

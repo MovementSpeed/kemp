@@ -12,6 +12,7 @@ class ModelAnimationSystem : IteratingSystem() {
     override fun process(entityId: Int) {
         val modelAnimatorComponent = modelAnimatorMapper.get(entityId) ?: return
         val modelAnimator = modelAnimatorComponent.modelAnimator
+        if (modelAnimator.animationsCount() == 0) return
 
         val duration = modelAnimator.animationDuration(0)
 
@@ -19,10 +20,12 @@ class ModelAnimationSystem : IteratingSystem() {
         val nowTimestamp = System.currentTimeMillis()
         val diffSeconds = (nowTimestamp - lastFrameTimestamp).toFloat() / 1000f
 
-        modelAnimatorComponent.currentTime += diffSeconds
+        modelAnimatorComponent.currentTime += diffSeconds * modelAnimatorComponent.playbackSpeed
 
         if (modelAnimatorComponent.currentTime > duration) {
             modelAnimatorComponent.currentTime = 0f
+        } else if (modelAnimatorComponent.currentTime < 0f) {
+            modelAnimatorComponent.currentTime = duration
         }
 
         modelAnimator.animate(0, modelAnimatorComponent.currentTime)

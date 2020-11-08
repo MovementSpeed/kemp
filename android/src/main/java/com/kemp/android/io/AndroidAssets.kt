@@ -78,7 +78,6 @@ class AndroidAssets(
             val entity = setupModelEntity(model, true, name, root)
             model.entity = entity
 
-            // Se il modello non ha animazione, crasha
             val modelAnimatorMapper = mapper<ModelAnimatorComponent>()
             val modelAnimatorComponent = modelAnimatorMapper.create(entity)
             modelAnimatorComponent.modelAnimator = model.animator()
