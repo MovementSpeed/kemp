@@ -71,12 +71,14 @@ class PlaygroundGame : Game {
         val durationSeconds = bobAnimator?.animationDuration(0)
 
         durationSeconds?.let {
-            anim += 0.01f
+            anim += 0.05f
+
             if (anim > durationSeconds) {
                 anim = 0f
             }
 
             bobAnimator.animate(0, anim)
+            bobAnimator.update()
         }*/
     }
 
@@ -92,10 +94,14 @@ class PlaygroundGame : Game {
     }
 
     private suspend fun createBob(assets: Assets, scene: Scene, graphics: GraphicsConfig): SceneEntity {
-        val bob = assets.loadModel("models", "bob.glb")
+        val bob = assets.loadModel("models", "bob_animated.glb")
 
         scene.addEntities(bob.entities())
         val bobEntity = bob.entity()
+
+        val entityTransform = bobEntity.component<TransformComponent>()
+        entityTransform.transform
+            //.scale(Scale(0.01f))
 
         val playerMapper = mapper<PlayerComponent>()
         playerMapper.create(bobEntity)

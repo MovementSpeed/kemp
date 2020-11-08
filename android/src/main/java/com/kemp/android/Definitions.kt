@@ -13,6 +13,7 @@ import com.kemp.android.rendering.ui.AndroidRenderer2D
 import com.kemp.android.scene.AndroidScene
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
+import com.kemp.core.ecs.systems.ModelAnimationSystem
 import com.kemp.core.ecs.systems.TouchElementsSystem
 import java.io.File
 
@@ -34,6 +35,7 @@ fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceVi
     val androidApplication = AndroidApplication(context) { app, worldConfig ->
         worldConfig.with(TouchElementsSystem())
         worldConfig.with(AndroidTouchUiRenderingSystem())
+        worldConfig.with(ModelAnimationSystem())
 
         game.worldConfig(worldConfig)
     }

@@ -22,6 +22,7 @@ import com.kemp.core.audio.Music
 import com.kemp.core.audio.Sound
 import com.kemp.core.config.input.InputConfiguration
 import com.kemp.core.ecs.components.EntityAssociationComponent
+import com.kemp.core.ecs.components.ModelAnimatorComponent
 import com.kemp.core.ecs.components.NodeComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.interfaces.Disposable
@@ -67,7 +68,7 @@ class AndroidAssets(
             val asset = assetLoader.createAssetFromBinary(buffer) ?: throw Exception("Couldn't load model $fileName at path $path")
 
             withContext(Dispatchers.Main) { resourceLoader.loadResources(asset) }
-            //asset.animator
+            asset.animator
 
             val name = fileName.takeWhile { it != '.' }
 
@@ -76,6 +77,11 @@ class AndroidAssets(
 
             val entity = setupModelEntity(model, true, name, root)
             model.entity = entity
+
+            // Se il modello non ha animazione, crasha
+            val modelAnimatorMapper = mapper<ModelAnimatorComponent>()
+            val modelAnimatorComponent = modelAnimatorMapper.create(entity)
+            modelAnimatorComponent.modelAnimator = model.animator()
 
             val entities = model.entities()
             entities.forEach { implementationEntity ->
