@@ -5,10 +5,8 @@ import com.kemp.core.*
 import com.kemp.core.app.Game
 import com.kemp.core.config.rendering.AntiAliasing
 import com.kemp.core.config.rendering.GraphicsConfig
-import com.kemp.core.ecs.components.ModelAnimatorComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.io.Assets
-import com.kemp.core.rendering.models.Model
 import com.kemp.core.rendering.ui.DefaultTouchStickRenderer
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
@@ -53,6 +51,11 @@ class PlaygroundGame : Game {
             val bob = createBob(assets, scene, graphics)
             createWeapon(attachTo = bob, assets, scene)
 
+            createTarget(8f, 8f, assets, scene)
+            createTarget(-8f, 8f, assets, scene)
+            createTarget(8f, -8f, assets, scene)
+            createTarget(-8f, -8f, assets, scene)
+
             val ibl = assets.loadIndirectLight("lighting", "_ibl.ktx")
             ibl.intensity(70_000f)
             ibl.rotate(Float3(0f, 0f, 0f))
@@ -79,7 +82,7 @@ class PlaygroundGame : Game {
     }
 
     private suspend fun createBob(assets: Assets, scene: Scene, graphics: GraphicsConfig): SceneEntity {
-        val bob = assets.loadModel("models", "bob_animated.glb")
+        val bob = assets.loadModel("models", "bob.glb")
 
         scene.addEntities(bob.entities())
         val bobEntity = bob.entity()
@@ -117,5 +120,19 @@ class PlaygroundGame : Game {
         val entityTransform = weaponEntity.component<TransformComponent>()
         entityTransform.transform
             .translate(Position(0.7f, 1f, -1f))
+    }
+
+    private suspend fun createTarget(x: Float, z: Float, assets: Assets, scene: Scene) {
+        val target = assets.loadModel("models", "target.glb")
+        scene.addEntities(target.entities())
+
+        val targetEntity = target.entity()
+
+        val entityTransform = targetEntity.component<TransformComponent>()
+        entityTransform.transform
+            .translate(Position(x, 0f, z))
+
+        mapper<TargetComponent>()
+            .create(targetEntity)
     }
 }
