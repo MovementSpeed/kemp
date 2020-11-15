@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class PlaygroundGame : Game {
     private val cameraControllerSystem = CameraControllerSystem()
+    private val physics = Physics()
 
     override fun worldConfig(worldConfigurationBuilder: WorldConfigurationBuilder) {
         worldConfigurationBuilder
@@ -22,6 +23,8 @@ class PlaygroundGame : Game {
     }
 
     override fun ready(scene: Scene) {
+        physics.init()
+
         val graphics = Kemp.graphicsConfig
         graphics.antiAliasing = AntiAliasing.FXAA
 
@@ -68,6 +71,7 @@ class PlaygroundGame : Game {
     }
 
     override fun update(delta: Float) {
+        physics.update()
     }
 
     private suspend fun createPlane(assets: Assets, scene: Scene) {
