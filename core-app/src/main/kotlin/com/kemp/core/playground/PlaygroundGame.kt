@@ -5,6 +5,7 @@ import com.kemp.core.*
 import com.kemp.core.app.Game
 import com.kemp.core.config.rendering.AntiAliasing
 import com.kemp.core.config.rendering.GraphicsConfig
+import com.kemp.core.ecs.components.RigidBodyComponent
 import com.kemp.core.ecs.components.TransformComponent
 import com.kemp.core.io.Assets
 import com.kemp.core.rendering.ui.DefaultTouchStickRenderer
@@ -23,7 +24,7 @@ class PlaygroundGame : Game {
     }
 
     override fun ready(scene: Scene) {
-        physics.init()
+        //physics.init()
 
         val graphics = Kemp.graphicsConfig
         graphics.antiAliasing = AntiAliasing.FXAA
@@ -55,9 +56,9 @@ class PlaygroundGame : Game {
             createWeapon(attachTo = bob, assets, scene)
 
             createTarget(8f, 8f, assets, scene)
-            createTarget(-8f, 8f, assets, scene)
+            /*createTarget(-8f, 8f, assets, scene)
             createTarget(8f, -8f, assets, scene)
-            createTarget(-8f, -8f, assets, scene)
+            createTarget(-8f, -8f, assets, scene)*/
 
             val ibl = assets.loadIndirectLight("lighting", "_ibl.ktx")
             ibl.intensity(70_000f)
@@ -71,7 +72,7 @@ class PlaygroundGame : Game {
     }
 
     override fun update(delta: Float) {
-        physics.update()
+        //physics.update()
     }
 
     private suspend fun createPlane(assets: Assets, scene: Scene) {
@@ -83,6 +84,12 @@ class PlaygroundGame : Game {
         entityTransform.transform
             .position(Position(0f))
             .scale(Scale(2f))
+
+        Kemp.physics.createRigidBody(entity,
+            RigidBodyComponent.Type.Plane(
+                10.0, 0.1, 10.0
+            )
+        )
     }
 
     private suspend fun createBob(assets: Assets, scene: Scene, graphics: GraphicsConfig): SceneEntity {
@@ -134,9 +141,18 @@ class PlaygroundGame : Game {
 
         val entityTransform = targetEntity.component<TransformComponent>()
         entityTransform.transform
-            .translate(Position(x, 0f, z))
+            .translate(Position(0f, 0f, 0f))
 
         mapper<TargetComponent>()
             .create(targetEntity)
+
+        Kemp.physics.createRigidBody(targetEntity,
+            RigidBodyComponent.Type.Box(
+                0.5,
+                1.0,
+                0.5,
+                1.0
+            )
+        )
     }
 }

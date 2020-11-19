@@ -14,7 +14,10 @@ import com.kemp.android.scene.AndroidScene
 import com.kemp.core.Kemp
 import com.kemp.core.app.Game
 import com.kemp.core.ecs.systems.ModelAnimationSystem
+import com.kemp.core.ecs.systems.PhysicsSystem
+import com.kemp.core.ecs.systems.RigidBodySystem
 import com.kemp.core.ecs.systems.TouchElementsSystem
+import com.kemp.core.physics.Physics
 import java.io.File
 
 typealias AttachStateListener = android.view.View.OnAttachStateChangeListener
@@ -32,10 +35,15 @@ typealias FilamentView = View
 val fileSeparator = File.separatorChar
 
 fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceView {
-    val androidApplication = AndroidApplication(context) { app, worldConfig ->
+    val physicsSystem = PhysicsSystem()
+    val physics = Physics(physicsSystem.physicsWorld, physicsSystem.space)
+
+    val androidApplication = AndroidApplication(context) { _, worldConfig ->
         worldConfig.with(TouchElementsSystem())
         worldConfig.with(AndroidTouchUiRenderingSystem())
         worldConfig.with(ModelAnimationSystem())
+        worldConfig.with(physicsSystem)
+        worldConfig.with(RigidBodySystem())
 
         game.worldConfig(worldConfig)
     }
@@ -57,11 +65,12 @@ fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceVi
     androidApplication.view.addRenderDelegate(renderer2D)
 
     Kemp.application = androidApplication
+    Kemp.keyboardInput = keyboardInput
     Kemp.ui.renderer2D = renderer2D
     Kemp.touchInput = touchInput
-    Kemp.keyboardInput = keyboardInput
     Kemp.assets = androidAssets
     Kemp.scene = androidScene
+    Kemp.physics = physics
     Kemp.game = game
     Kemp.start()
 
