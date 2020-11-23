@@ -56,9 +56,11 @@ class PlaygroundGame : Game {
             createWeapon(attachTo = bob, assets, scene)
 
             createTarget(8f, 8f, assets, scene)
-            /*createTarget(-8f, 8f, assets, scene)
+            createTarget(-8f, 8f, assets, scene)
             createTarget(8f, -8f, assets, scene)
-            createTarget(-8f, -8f, assets, scene)*/
+            createTarget(-8f, -8f, assets, scene)
+
+            createBox(0f, 0f, assets, scene)
 
             val ibl = assets.loadIndirectLight("lighting", "_ibl.ktx")
             ibl.intensity(70_000f)
@@ -76,18 +78,17 @@ class PlaygroundGame : Game {
     }
 
     private suspend fun createPlane(assets: Assets, scene: Scene) {
-        val plane = assets.loadModel("models", "basic_plane.glb")
+        val plane = assets.loadModel("models", "plane.glb")
         scene.addEntities(plane.entities())
         val entity = plane.entity()
 
         val entityTransform = entity.component<TransformComponent>()
         entityTransform.transform
             .position(Position(0f))
-            .scale(Scale(2f))
 
         Kemp.physics.createRigidBody(entity,
             RigidBodyComponent.Type.Plane(
-                10.0, 0.1, 10.0
+                20.0, 0.1, 20.0
             )
         )
     }
@@ -141,16 +142,23 @@ class PlaygroundGame : Game {
 
         val entityTransform = targetEntity.component<TransformComponent>()
         entityTransform.transform
-            .translate(Position(0f, 0f, 0f))
+            .translate(Position(x, 0f, z))
 
         mapper<TargetComponent>()
             .create(targetEntity)
+    }
 
-        Kemp.physics.createRigidBody(targetEntity,
+    private suspend fun createBox(x: Float, z: Float, assets: Assets, scene: Scene) {
+        val model = assets.loadModel("models", "box.glb")
+        scene.addEntities(model.entities())
+
+        val entity = model.entity()
+
+        Kemp.physics.createRigidBody(entity,
             RigidBodyComponent.Type.Box(
                 0.5,
                 1.0,
-                0.5,
+                1.0,
                 1.0
             )
         )
