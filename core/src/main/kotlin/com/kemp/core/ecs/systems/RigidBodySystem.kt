@@ -25,23 +25,29 @@ class RigidBodySystem : IteratingSystem() {
         val transformComponent = transformMapper.get(entityId) ?: return
         val transform = transformComponent.transform
 
-        val bodyPosition = body.position
-        val rotation = body.quaternion as DQuaternion
+        when (rigidBodyComponent.initialized()) {
+            true -> {
+                val bodyPosition = body.position
+                val rotation = body.quaternion as DQuaternion
 
-        /*float3.x = rotation.get1().toFloat()
-        float3.y = rotation.get2().toFloat()
-        float3.z = rotation.get3().toFloat()
-        val angle = rotation.get0().toFloat()*/
+                val axisAngle = quaternionToAxisAngle(rotation)
+                val rot = rotation(axisAngle.first, degrees(axisAngle.second))
 
-        val axisAngle = quaternionToAxisAngle(rotation)
-        val rot = rotation(axisAngle.first, degrees(axisAngle.second))
+                float3.x = bodyPosition.get0().toFloat()
+                float3.y = bodyPosition.get1().toFloat()
+                float3.z = bodyPosition.get2().toFloat()
+                val tra = translation(float3)
 
-        float3.x = bodyPosition.get0().toFloat()
-        float3.y = bodyPosition.get1().toFloat()
-        float3.z = bodyPosition.get2().toFloat()
-        val tra = translation(float3)
+                transform.matrix = tra * rot
+            }
 
-        transform.matrix = tra * rot
+            false -> {
+                rigidBodyComponent.initWith(
+                    transform.position,
+                    transform.rotation
+                )
+            }
+        }
     }
 
     private fun quaternionToAxisAngle(q1: DQuaternion): Pair<Float3, Float> {

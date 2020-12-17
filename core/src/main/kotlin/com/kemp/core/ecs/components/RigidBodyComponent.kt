@@ -1,8 +1,12 @@
 package com.kemp.core.ecs.components
 
 import com.artemis.Component
+import com.kemp.core.Position
+import com.kemp.core.Rotation
+import com.kemp.core.toQuaternion
+import com.kemp.core.toVector3
+import com.kemp.core.utils.Float3
 import com.kemp.core.utils.radians
-import org.ode4j.math.DMatrix3
 import org.ode4j.math.DQuaternion
 import org.ode4j.math.DVector3
 import org.ode4j.ode.*
@@ -10,13 +14,24 @@ import kotlin.random.Random
 
 class RigidBodyComponent : Component() {
     var geom: DGeom? = null
+    var body: DBody? = null
+
     lateinit var type: Type
 
+    private var initialized = false
     private lateinit var world: DWorld
     private lateinit var space: DSpace
-
-    var body: DBody? = null
     private lateinit var mass: DMass
+
+    fun initialized(): Boolean {
+        return initialized
+    }
+
+    fun initWith(position: Position, rotation: Rotation = Float3()) {
+        body?.position = position.toVector3()
+        body?.quaternion = rotation.toQuaternion()
+        initialized = true
+    }
 
     fun createAs(type: Type, world: DWorld, space: DSpace) {
         this.type = type
@@ -31,12 +46,8 @@ class RigidBodyComponent : Component() {
 
     private fun box(box: Type.Box) {
         body = OdeHelper.createBody(world)
-        body?.position = DVector3(0.0, 10.0, 0.0)
-        body?.quaternion = DQuaternion(
-            radians(Random.nextFloat() * 360f).toDouble(),
-            Random.nextDouble(),
-            Random.nextDouble(),
-            Random.nextDouble())
+        body?.position = Position().toVector3()
+        body?.quaternion = Rotation().toQuaternion()
 
         mass = OdeHelper.createMass()
         mass.setBox(
@@ -60,7 +71,7 @@ class RigidBodyComponent : Component() {
 
     private fun plane(plane: Type.Plane) {
         body = OdeHelper.createBody(world)
-        body?.position = DVector3(0.0, 0.0, 0.0)
+        body?.position = Position().toVector3()
         body?.setKinematic()
 
         geom = OdeHelper.createBox(

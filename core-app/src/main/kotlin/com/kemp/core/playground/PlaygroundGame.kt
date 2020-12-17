@@ -154,9 +154,14 @@ class PlaygroundGame : Game {
 
         val entity = model.entity()
 
+        val transformComponent = entity.component<TransformComponent>()
+        transformComponent.transform
+            .translate(Position(0f, 10f, 0f))
+            .rotate(Rotation(45f, 45f, 45f))
+
         Kemp.physics.createRigidBody(entity,
             RigidBodyComponent.Type.Box(
-                0.5,
+                2.0,
                 1.0,
                 1.0,
                 1.0
