@@ -12,6 +12,8 @@ class ModelAnimationSystem : IteratingSystem() {
     override fun process(entityId: Int) {
         val modelAnimatorComponent = modelAnimatorMapper.get(entityId) ?: return
         val modelAnimator = modelAnimatorComponent.modelAnimator
+        modelAnimator ?: return
+
         if (modelAnimator.animationsCount() == 0) return
 
         val duration = modelAnimator.animationDuration(0)

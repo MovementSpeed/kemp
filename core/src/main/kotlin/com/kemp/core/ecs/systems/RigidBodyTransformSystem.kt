@@ -13,7 +13,7 @@ import kotlin.math.sqrt
 
 
 @All(RigidBodyComponent::class, TransformComponent::class)
-class RigidBodySystem : IteratingSystem() {
+class RigidBodyTransformSystem : IteratingSystem() {
     private lateinit var rigidBodyMapper: ComponentMapper<RigidBodyComponent>
     private lateinit var transformMapper: ComponentMapper<TransformComponent>
     private val float3 = Float3()
@@ -27,11 +27,12 @@ class RigidBodySystem : IteratingSystem() {
 
         when (rigidBodyComponent.initialized()) {
             true -> {
+                // Takes the rigid body transform and applies it to the rendering transform
                 val bodyPosition = body.position
                 val rotation = body.quaternion as DQuaternion
 
-                val axisAngle = quaternionToAxisAngle(rotation)
-                val rot = rotation(axisAngle.first, degrees(axisAngle.second))
+                val (axis, angle) = quaternionToAxisAngle(rotation)
+                val rot = rotation(axis, degrees(angle))
 
                 float3.x = bodyPosition.get0().toFloat()
                 float3.y = bodyPosition.get1().toFloat()
@@ -42,6 +43,7 @@ class RigidBodySystem : IteratingSystem() {
             }
 
             false -> {
+                // Takes the rendering transform and initializes the rigid body transform
                 rigidBodyComponent.initWith(
                     transform.position,
                     transform.rotation

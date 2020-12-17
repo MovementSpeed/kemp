@@ -15,7 +15,7 @@ import com.kemp.core.Kemp
 import com.kemp.core.app.Game
 import com.kemp.core.ecs.systems.ModelAnimationSystem
 import com.kemp.core.ecs.systems.PhysicsSystem
-import com.kemp.core.ecs.systems.RigidBodySystem
+import com.kemp.core.ecs.systems.RigidBodyTransformSystem
 import com.kemp.core.ecs.systems.TouchElementsSystem
 import com.kemp.core.physics.Physics
 import java.io.File
@@ -43,7 +43,7 @@ fun androidCreate(context: Context, lifecycle: Lifecycle, game: Game): SurfaceVi
         worldConfig.with(AndroidTouchUiRenderingSystem())
         worldConfig.with(ModelAnimationSystem())
         worldConfig.with(physicsSystem)
-        worldConfig.with(RigidBodySystem())
+        worldConfig.with(RigidBodyTransformSystem())
 
         game.worldConfig(worldConfig)
     }

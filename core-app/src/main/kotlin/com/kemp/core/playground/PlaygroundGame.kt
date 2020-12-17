@@ -12,6 +12,7 @@ import com.kemp.core.rendering.ui.DefaultTouchStickRenderer
 import com.kemp.core.scene.Scene
 import com.kemp.core.utils.Float3
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 class PlaygroundGame : Game {
     private val cameraControllerSystem = CameraControllerSystem()
@@ -60,7 +61,7 @@ class PlaygroundGame : Game {
             createTarget(8f, -8f, assets, scene)
             createTarget(-8f, -8f, assets, scene)
 
-            createBox(0f, 0f, assets, scene)
+            createBox(0f, 0.2f, assets, scene)
 
             val ibl = assets.loadIndirectLight("lighting", "_ibl.ktx")
             ibl.intensity(70_000f)
@@ -77,22 +78,6 @@ class PlaygroundGame : Game {
         //physics.update()
     }
 
-    private suspend fun createPlane(assets: Assets, scene: Scene) {
-        val plane = assets.loadModel("models", "plane.glb")
-        scene.addEntities(plane.entities())
-        val entity = plane.entity()
-
-        val entityTransform = entity.component<TransformComponent>()
-        entityTransform.transform
-            .position(Position(0f))
-
-        Kemp.physics.createRigidBody(entity,
-            RigidBodyComponent.Type.Plane(
-                20.0, 0.1, 20.0
-            )
-        )
-    }
-
     private suspend fun createBob(assets: Assets, scene: Scene, graphics: GraphicsConfig): SceneEntity {
         val bob = assets.loadModel("models", "bob.glb")
 
@@ -101,6 +86,7 @@ class PlaygroundGame : Game {
 
         val entityTransform = bobEntity.component<TransformComponent>()
         entityTransform.transform
+            .translate(Position(y = 10f))
 
         val playerMapper = mapper<PlayerComponent>()
         playerMapper.create(bobEntity)
@@ -109,12 +95,24 @@ class PlaygroundGame : Game {
         val screenHeight = graphics.height
         val radius = 150f
 
+        Kemp.physics.createRigidBody(
+            bobEntity,
+            RigidBodyComponent.Type.Box(
+                1.0,
+                1.0,
+                1.0,
+                2.0,
+                kinematic = false
+            )
+        )
+
         Kemp.ui.createTouchStick(
             bobEntity,
             "rotation",
             screenWidth / 2f,
             screenHeight - radius - 64f,
-            radius, DefaultTouchStickRenderer())
+            radius, DefaultTouchStickRenderer()
+        )
 
         cameraControllerSystem.target = bobEntity
         return bob.root()
@@ -148,6 +146,29 @@ class PlaygroundGame : Game {
             .create(targetEntity)
     }
 
+    private suspend fun createPlane(assets: Assets, scene: Scene) {
+        val plane = assets.loadModel("models", "plane.glb")
+        scene.addEntities(plane.entities())
+
+        val entity = plane.entity()
+
+        val entityTransform = entity.component<TransformComponent>()
+        entityTransform.transform
+            .translate(Position(0f))
+            .rotate(Rotation(20f, 0f, 0f))
+
+        Kemp.physics.createRigidBody(
+            entity,
+            RigidBodyComponent.Type.Box(
+                20.0,
+                0.1,
+                20.0,
+                0.0,
+                kinematic = true
+            )
+        )
+    }
+
     private suspend fun createBox(x: Float, z: Float, assets: Assets, scene: Scene) {
         val model = assets.loadModel("models", "box.glb")
         scene.addEntities(model.entities())
@@ -156,15 +177,23 @@ class PlaygroundGame : Game {
 
         val transformComponent = entity.component<TransformComponent>()
         transformComponent.transform
-            .translate(Position(0f, 10f, 0f))
-            .rotate(Rotation(45f, 45f, 45f))
+            .translate(Position(x, 10f, z))
+            .rotate(
+                Rotation(
+                    Random.nextInt(360).toFloat(),
+                    Random.nextInt(360).toFloat(),
+                    Random.nextInt(360).toFloat()
+                )
+            )
 
-        Kemp.physics.createRigidBody(entity,
+        Kemp.physics.createRigidBody(
+            entity,
             RigidBodyComponent.Type.Box(
+                1.0,
+                1.0,
+                1.0,
                 2.0,
-                1.0,
-                1.0,
-                1.0
+                kinematic = false
             )
         )
     }

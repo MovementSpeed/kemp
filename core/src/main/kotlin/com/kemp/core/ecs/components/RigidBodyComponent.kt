@@ -6,11 +6,7 @@ import com.kemp.core.Rotation
 import com.kemp.core.toQuaternion
 import com.kemp.core.toVector3
 import com.kemp.core.utils.Float3
-import com.kemp.core.utils.radians
-import org.ode4j.math.DQuaternion
-import org.ode4j.math.DVector3
 import org.ode4j.ode.*
-import kotlin.random.Random
 
 class RigidBodyComponent : Component() {
     var geom: DGeom? = null
@@ -21,7 +17,7 @@ class RigidBodyComponent : Component() {
     private var initialized = false
     private lateinit var world: DWorld
     private lateinit var space: DSpace
-    private lateinit var mass: DMass
+    private var mass: DMass? = null
 
     fun initialized(): Boolean {
         return initialized
@@ -40,52 +36,48 @@ class RigidBodyComponent : Component() {
 
         when (type) {
             is Type.Box -> box(type)
-            is Type.Plane -> plane(type)
         }
     }
 
     private fun box(box: Type.Box) {
         body = OdeHelper.createBody(world)
+        setup(box, body)
+
+        mass?.apply {
+            setBox(
+                box.density,
+                box.lengthX,
+                box.lengthY,
+                box.lengthZ
+            )
+
+            body?.mass = this
+        }
+
+        geom = OdeHelper.createBox(
+            space,
+            box.lengthX,
+            box.lengthY,
+            box.lengthZ
+        )
+
+        geom?.body = body
+    }
+
+    private fun setup(type: Type, body: DBody?) {
         body?.position = Position().toVector3()
         body?.quaternion = Rotation().toQuaternion()
 
-        mass = OdeHelper.createMass()
-        mass.setBox(
-            box.density,
-            box.lengthX,
-            box.lengthY,
-            box.lengthZ
-        )
-
-        body?.mass = mass
-
-        geom = OdeHelper.createBox(
-            space,
-            box.lengthX,
-            box.lengthY,
-            box.lengthZ
-        )
-
-        geom?.body = body
+        if (type.kinematic) {
+            body?.setKinematic()
+        } else {
+            body?.autoDisableFlag = false
+            body?.enable()
+            mass = OdeHelper.createMass()
+        }
     }
 
-    private fun plane(plane: Type.Plane) {
-        body = OdeHelper.createBody(world)
-        body?.position = Position().toVector3()
-        body?.setKinematic()
-
-        geom = OdeHelper.createBox(
-            space,
-            plane.lengthX,
-            plane.lengthY,
-            plane.lengthZ
-        )
-
-        geom?.body = body
-    }
-
-    sealed class Type {
-        data class Box(val density: Double, val lengthX: Double, val lengthY: Double, val lengthZ: Double) : Type()
-        data class Plane(val lengthX: Double, val lengthY: Double, val lengthZ: Double) : Type()
+    sealed class Type(open val kinematic: Boolean) {
+        class Box(val lengthX: Double, val lengthY: Double, val lengthZ: Double, val density: Double = 0.0, kinematic: Boolean = false) : Type(kinematic)
     }
 }
