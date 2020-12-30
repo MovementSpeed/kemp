@@ -37,7 +37,7 @@ class AndroidTransformSystem(private val engine: Engine, private val transformMa
         val entityAssociationComponent = entityAssociationMapper.get(entityId)
         val filamentEntity = entityAssociationComponent.implementationEntity
 
-        if (component is NodeComponent) {
+        if (component is NodeComponent && transformComponent.root) {
             // It's a Filament renderable
             filamentEntity?.let {
                 val i = transformManager.getInstance(filamentEntity)

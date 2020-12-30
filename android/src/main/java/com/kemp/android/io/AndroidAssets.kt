@@ -186,9 +186,12 @@ class AndroidAssets(
 
         val ieInstance = engine.transformManager.getInstance(implementationEntity)
         val ieTransform = engine.transformManager.getWorldTransform(ieInstance, null)
+
         transformComponent.transform.matrix = Mat4.of(*ieTransform)
         transposeFast(transformComponent.transform.matrix)
         transformComponent.transform.update()
+
+        transformComponent.root = root
 
         val nodeComponent = nodeMapper.create(kempEntity)
         val nodeName = if (!root) model.nameOf(implementationEntity) else "root"

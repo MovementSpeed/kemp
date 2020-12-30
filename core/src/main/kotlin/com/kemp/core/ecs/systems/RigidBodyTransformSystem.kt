@@ -30,6 +30,7 @@ class RigidBodyTransformSystem : IteratingSystem() {
                 // Takes the rigid body transform and applies it to the rendering transform
                 val bodyPosition = body.position
                 val rotation = body.quaternion as DQuaternion
+                val scale = scale(transform.scale)
 
                 val (axis, angle) = quaternionToAxisAngle(rotation)
                 val rot = rotation(axis, degrees(angle))
@@ -39,7 +40,7 @@ class RigidBodyTransformSystem : IteratingSystem() {
                 float3.z = bodyPosition.get2().toFloat()
                 val tra = translation(float3)
 
-                transform.matrix = tra * rot
+                transform.matrix = tra * rot * scale
             }
 
             false -> {

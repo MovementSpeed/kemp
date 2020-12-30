@@ -27,6 +27,13 @@ object Kemp {
     lateinit var keyboardInput: KeyboardInput
     var ui = Ui()
 
+    var previousFrameTimeNanos = 0L
+    var frameTimeNanos = 0L
+        set(value) {
+            previousFrameTimeNanos = field
+            field = value
+        }
+
     fun start() {
         graphicsConfig.configChanged = {
             application.graphicsConfigChanged(graphicsConfig)
@@ -42,6 +49,7 @@ object Kemp {
         }
 
         application.update = { frameTimeNanos ->
+            this.frameTimeNanos = frameTimeNanos
             // Update engine systems
             world.process()
 

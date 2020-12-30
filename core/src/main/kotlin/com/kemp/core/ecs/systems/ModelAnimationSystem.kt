@@ -3,6 +3,7 @@ package com.kemp.core.ecs.systems
 import com.artemis.ComponentMapper
 import com.artemis.annotations.All
 import com.artemis.systems.IteratingSystem
+import com.kemp.core.Kemp
 import com.kemp.core.ecs.components.ModelAnimatorComponent
 
 @All(ModelAnimatorComponent::class)
@@ -15,24 +16,28 @@ class ModelAnimationSystem : IteratingSystem() {
         modelAnimator ?: return
 
         if (modelAnimator.animationsCount() == 0) return
+        val currentTake = modelAnimatorComponent.currentTake ?: return
 
-        val duration = modelAnimator.animationDuration(0)
+        val frameStartTime = currentTake.frameStart * modelAnimatorComponent.frameDuration
+        val frameEndTime = currentTake.frameEnd * modelAnimatorComponent.frameDuration
+        val takeDuration = frameEndTime - frameStartTime
 
-        val lastFrameTimestamp = modelAnimatorComponent.lastFrameTimestamp
-        val nowTimestamp = System.currentTimeMillis()
-        val diffSeconds = (nowTimestamp - lastFrameTimestamp).toFloat() / 1000f
+        val lastFrameTimestamp = Kemp.previousFrameTimeNanos
+        val nowTimestamp = Kemp.frameTimeNanos
+        val diffSeconds = ((nowTimestamp - lastFrameTimestamp).toDouble() / 1000000000.0).toFloat()
 
-        modelAnimatorComponent.currentTime += diffSeconds * modelAnimatorComponent.playbackSpeed
+        currentTake.currentTime += modelAnimatorComponent.frameDuration * modelAnimatorComponent.playbackSpeed //diffSeconds * modelAnimatorComponent.playbackSpeed
+        val halfFrameTolerance = modelAnimatorComponent.frameDuration * 0.5f
 
-        if (modelAnimatorComponent.currentTime > duration) {
-            modelAnimatorComponent.currentTime = 0f
-        } else if (modelAnimatorComponent.currentTime < 0f) {
-            modelAnimatorComponent.currentTime = duration
+        if (currentTake.currentTime + halfFrameTolerance > takeDuration) {
+            currentTake.currentTime = 0f
+        } else if (currentTake.currentTime < 0f) {
+            currentTake.currentTime = takeDuration
         }
 
-        modelAnimator.animate(0, modelAnimatorComponent.currentTime)
-        modelAnimator.update()
+        val actualTime = frameStartTime + currentTake.currentTime
 
-        modelAnimatorComponent.lastFrameTimestamp = nowTimestamp
+        modelAnimator.animate(0, actualTime)
+        modelAnimator.update()
     }
 }

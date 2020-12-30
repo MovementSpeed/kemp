@@ -54,17 +54,17 @@ class PlaygroundGame : Game {
             createPlane(assets, scene)
 
             val bob = createBob(assets, scene, graphics)
-            createWeapon(attachTo = bob, assets, scene)
+            //createWeapon(attachTo = bob, assets, scene)
 
-            createTarget(8f, 8f, assets, scene)
-            createTarget(-8f, 8f, assets, scene)
-            createTarget(8f, -8f, assets, scene)
-            createTarget(-8f, -8f, assets, scene)
+            //createTarget(8f, 8f, assets, scene)
+            //createTarget(-8f, 8f, assets, scene)
+            //createTarget(8f, -8f, assets, scene)
+            //createTarget(-8f, -8f, assets, scene)
 
-            createBox(0f, 0.2f, assets, scene)
+            //createBox(0f, 0.2f, assets, scene)
 
             val ibl = assets.loadIndirectLight("lighting", "_ibl.ktx")
-            ibl.intensity(70_000f)
+            ibl.intensity(30_000f)
             ibl.rotate(Float3(0f, 0f, 0f))
 
             scene.imageBasedLighting(ibl)
@@ -79,14 +79,15 @@ class PlaygroundGame : Game {
     }
 
     private suspend fun createBob(assets: Assets, scene: Scene, graphics: GraphicsConfig): SceneEntity {
-        val bob = assets.loadModel("models", "bob.glb")
+        val bob = assets.loadModel("models", "raine.glb")
 
         scene.addEntities(bob.entities())
         val bobEntity = bob.entity()
 
         val entityTransform = bobEntity.component<TransformComponent>()
         entityTransform.transform
-            .translate(Position(y = 10f))
+            //.translate(Position(y = 100f))
+            //.scale(Scale(0.02f))
 
         val playerMapper = mapper<PlayerComponent>()
         playerMapper.create(bobEntity)
@@ -95,7 +96,7 @@ class PlaygroundGame : Game {
         val screenHeight = graphics.height
         val radius = 150f
 
-        Kemp.physics.createRigidBody(
+        /*Kemp.physics.createRigidBody(
             bobEntity,
             RigidBodyComponent.Type.Box(
                 1.0,
@@ -104,7 +105,7 @@ class PlaygroundGame : Game {
                 2.0,
                 kinematic = false
             )
-        )
+        )*/
 
         Kemp.ui.createTouchStick(
             bobEntity,
@@ -155,7 +156,7 @@ class PlaygroundGame : Game {
         val entityTransform = entity.component<TransformComponent>()
         entityTransform.transform
             .translate(Position(0f))
-            .rotate(Rotation(20f, 0f, 0f))
+            .rotate(Rotation(0f, 0f, 0f))
 
         Kemp.physics.createRigidBody(
             entity,

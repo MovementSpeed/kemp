@@ -164,6 +164,18 @@ class AndroidApplication(
         assetLoader = AssetLoader(engine, MaterialProvider(engine), EntityManager.get())
         resourceLoader = ResourceLoader(engine, true, false)
 
+        val light = EntityManager.get().create()
+
+        val (r, g, b) = Colors.cct(6_500.0f)
+        LightManager.Builder(LightManager.Type.DIRECTIONAL)
+            .color(r, g, b)
+            .intensity(100_000.0f)
+            .direction(-1.0f, -1.0f, 0.0f)
+            .castShadows(true)
+            .build(engine, light)
+
+        scene.addEntity(light)
+
         /*val light = EntityManager.get().create()
 
         val (r, g, b) = Colors.cct(6500.0f)
